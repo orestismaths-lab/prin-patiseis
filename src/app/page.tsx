@@ -5,6 +5,7 @@ import ImagePicker from '@/components/ImagePicker'
 import ResultCard from '@/components/ResultCard'
 import { runOcr } from '@/lib/ocr'
 import { analyzeText } from '@/lib/scamEngine'
+import { loadConfig } from '@/lib/configLoader'
 import { ScamResult } from '@/types/scam'
 import { ShieldCheck } from 'lucide-react'
 
@@ -23,7 +24,10 @@ export default function Home() {
     setErrorMsg(null)
 
     try {
-      const { text } = await runOcr(file, (pct) => setOcrProgress(pct))
+      const [{ text }, config] = await Promise.all([
+        runOcr(file, (pct) => setOcrProgress(pct)),
+        loadConfig(),
+      ])
 
       if (text.length < 10) {
         setErrorMsg(
@@ -33,7 +37,7 @@ export default function Home() {
         return
       }
 
-      setResult(analyzeText(text))
+      setResult(analyzeText(text, config))
       setStage('done')
     } catch {
       setErrorMsg('Κάτι πήγε στραβά κατά την ανάγνωση της εικόνας. Δοκίμασε ξανά.')
@@ -41,10 +45,11 @@ export default function Home() {
     }
   }, [])
 
-  function handleManualSubmit() {
+  async function handleManualSubmit() {
     const trimmed = manualText.trim()
     if (trimmed.length < 5) return
-    setResult(analyzeText(trimmed))
+    const config = await loadConfig()
+    setResult(analyzeText(trimmed, config))
     setStage('done')
   }
 

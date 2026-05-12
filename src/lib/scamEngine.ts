@@ -1,108 +1,12 @@
-import { ScamResult, ScamSignal, RiskLevel } from '@/types/scam'
+import { ScamResult, ScamSignal, RiskLevel, ScamConfig } from '@/types/scam'
 import { extractDomains, extractEmails, hasLink } from '@/lib/extractors'
-import { isKnownDomain } from '@/lib/domainRegistry'
+import { DEFAULT_CONFIG } from '@/lib/defaultConfig'
 
 // ── Greek normalization ────────────────────────────────────────────────────────
 // OCR often strips accents (άμεσα → αμεσα, ΑΜΕΣΑ → αμεσα).
 // Normalize both the haystack and each keyword before matching.
 function norm(s: string): string {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-}
-
-// ── Keyword dictionaries ──────────────────────────────────────────────────────
-// Single (unaccented) form per word — norm() handles the rest at match time.
-
-const URGENCY_WORDS = [
-  'αμεσα', 'αμεσως', 'επειγον', 'τωρα', 'σημερα',
-  'εντος', '24 ωρες', '48 ωρες', 'ληγει', 'λιγει',
-  'απαιτειται', 'αμελλητι', 'urgent', 'immediately',
-  'expire', 'expires', 'deadline',
-]
-
-const FEAR_WORDS = [
-  'αποκλεισμος', 'απενεργοποιηση', 'αναστολη',
-  'παγωμενος', 'μπλοκαρε', 'blocked', 'suspended', 'disabled',
-  'κλειδωμα', 'κλειδωθηκε', 'διαγραφη', 'απαγορευση',
-  'παραβιαση', 'unauthorized', 'illegal', 'παρανομη',
-]
-
-const CREDENTIAL_WORDS = [
-  // Stems cover all Greek declension forms:
-  // "κωδικ" matches κωδικός (nom) / κωδικό (acc) / κωδικοί (pl)
-  'κωδικ', 'password', 'pin', 'otp',
-  // Card number: cover nominative ("αριθμος καρτας") and accusative ("αριθμο καρτ")
-  'αριθμος καρτ', 'αριθμο καρτ', 'cvv', 'cvc', 'iban',
-  // "τραπεζικ" covers τραπεζικά / τραπεζικός
-  'τραπεζικ',
-  // "στοιχει" is a substring of στοιχεία/στοιχείο — covers all forms
-  'στοιχει',
-  // "επιβεβαιωσ" covers επιβεβαίωση / επιβεβαιώστε
-  'επιβεβαιωσ',
-  'verification', 'verify',
-  // "αριθμ" + "λογαριασμ" would be too broad — use multi-word phrase only
-  'αριθμος λογαριασμ', 'αριθμο λογαριασμ',
-  'one-time', 'one time', 'αυθεντικοποιηση', '2fa', 'sms code',
-]
-
-const PAYMENT_WORDS = [
-  'πληρωση', 'πληρωσε', 'payment', 'pay',
-  'χρεωση', 'οφειλη', 'ληξιπροθεσμη', 'χρεος',
-  'εκκρεμοτητα', 'ποσο', 'ευρω', '€',
-  // "euro" omitted — substring of "eurobank", causes false positives on brand names
-  'προστιμο', 'φορος',
-]
-
-const REWARD_WORDS = [
-  'κερδισες', 'νικητης', 'δωρο', 'prize', 'winner',
-  'congratulations', 'συγχαρητηρια', 'επιστροφη',
-  'επιστροφη φορου', 'refund', 'cashback', 'bonus',
-  'εκπληξη', 'δωρεαν', 'free', 'gift',
-]
-
-// Each brand has keywords AND its known legitimate domains.
-// Impersonation is flagged only when keywords appear but none of the brand's
-// own legitimate domains are present in the message.
-const BRAND_IMPERSONATION: Record<string, { keywords: string[]; domains: string[] }> = {
-  'ΑΑΔΕ / Εφορία': {
-    keywords: ['ααδε', 'aade', 'εφορια', 'taxisnet', 'myaade'],
-    domains: ['aade.gr', 'myaade.gov.gr', 'taxisnet.gov.gr'],
-  },
-  'ΕΛΤΑ': {
-    keywords: ['ελτα', 'elta', 'ταχυδρομει', 'δεμα', 'parcel'],
-    domains: ['elta.gr'],
-  },
-  'ΔΕΗ': {
-    keywords: ['δεη', 'dei', 'ρευμα', 'ηλεκτρικο'],
-    domains: ['dei.gr', 'deddie.gr'],
-  },
-  'Eurobank': {
-    keywords: ['eurobank'],
-    domains: ['eurobank.gr'],
-  },
-  'Alpha Bank': {
-    keywords: ['alpha bank', 'alphabank'],
-    domains: ['alpha.gr'],
-  },
-  'Εθνική Τράπεζα': {
-    keywords: ['nbg', 'εθνικη τραπεζα', 'national bank'],
-    domains: ['nbg.gr'],
-  },
-  'Τράπεζα Πειραιώς': {
-    keywords: ['πειραιως', 'piraeus', 'winbank'],
-    domains: ['piraeusbank.gr', 'winbank.gr'],
-  },
-  'Cosmote / e-pay': {
-    keywords: ['cosmote', 'e-pay', 'epay'],
-    domains: ['cosmote.gr'],
-  },
-  'ΕΦΚΑ': {
-    keywords: ['εφκα', 'efka'],
-    domains: ['efka.gov.gr', 'e-efka.gov.gr'],
-  },
-  'Ελληνική Αστυνομία': {
-    keywords: ['αστυνομια', 'police', 'ελληνικη αστυνομια'],
-    domains: [],
-  },
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -117,6 +21,19 @@ function countMatches(text: string, words: string[]): number {
   return words.filter((w) => n.includes(norm(w))).length
 }
 
+function isKnownDomainFromConfig(domain: string, config: ScamConfig): boolean {
+  const lower = domain.toLowerCase()
+  return config.legitimateDomains.some(
+    (known) => lower === known || lower.endsWith('.' + known)
+  )
+}
+
+function isPhishingDomain(domain: string, config: ScamConfig): boolean {
+  const lower = domain.toLowerCase()
+  const allPhishing = [...config.phishingDomains, ...config.manualPhishingDomains]
+  return allPhishing.some((p) => lower === p || lower.endsWith('.' + p))
+}
+
 function brandDomainPresent(detectedDomains: string[], brandDomains: string[]): boolean {
   if (brandDomains.length === 0) return false
   return detectedDomains.some((d) =>
@@ -126,16 +43,25 @@ function brandDomainPresent(detectedDomains: string[], brandDomains: string[]): 
 
 // ── Main engine ───────────────────────────────────────────────────────────────
 
-export function analyzeText(text: string): ScamResult {
+export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): ScamResult {
   const signals: ScamSignal[] = []
   let totalScore = 0
+
+  const { greek, suspiciousTlds } = config
 
   const domains = extractDomains(text)
   const emails = extractEmails(text)
   const messageHasLink = hasLink(text)
 
-  const unknownDomains = domains.filter((d) => !isKnownDomain(d))
-  const knownDomains = domains.filter((d) => isKnownDomain(d))
+  const unknownDomains = domains.filter((d) => !isKnownDomainFromConfig(d, config))
+  const knownDomains = domains.filter((d) => isKnownDomainFromConfig(d, config))
+
+  // 0. Known phishing domains — immediate dangerous signal
+  const knownPhishing = domains.filter((d) => isPhishingDomain(d, config))
+  if (knownPhishing.length > 0) {
+    signals.push({ label: 'Γνωστός phishing σύνδεσμος', score: 50 })
+    totalScore += 50
+  }
 
   // 1. Unknown / suspicious domains
   if (unknownDomains.length > 0) {
@@ -145,7 +71,7 @@ export function analyzeText(text: string): ScamResult {
   }
 
   // 2. Urgency
-  const urgencyCount = countMatches(text, URGENCY_WORDS)
+  const urgencyCount = countMatches(text, greek.urgencyWords)
   if (urgencyCount > 0) {
     const score = Math.min(urgencyCount * 8, 20)
     signals.push({ label: 'Λέξεις επείγοντος / πίεσης χρόνου', score })
@@ -153,7 +79,7 @@ export function analyzeText(text: string): ScamResult {
   }
 
   // 3. Fear / blocked-account language
-  const fearCount = countMatches(text, FEAR_WORDS)
+  const fearCount = countMatches(text, greek.fearWords)
   if (fearCount > 0) {
     const score = Math.min(fearCount * 10, 25)
     signals.push({ label: 'Απειλή αποκλεισμού / παραβίασης λογαριασμού', score })
@@ -161,7 +87,7 @@ export function analyzeText(text: string): ScamResult {
   }
 
   // 4. Credential / sensitive data requests
-  const credCount = countMatches(text, CREDENTIAL_WORDS)
+  const credCount = countMatches(text, greek.credentialWords)
   if (credCount > 0) {
     const score = Math.min(credCount * 12, 30)
     signals.push({ label: 'Ζητά κωδικούς, PIN, OTP ή στοιχεία κάρτας', score })
@@ -169,7 +95,7 @@ export function analyzeText(text: string): ScamResult {
   }
 
   // 5. Payment words
-  const payCount = countMatches(text, PAYMENT_WORDS)
+  const payCount = countMatches(text, greek.paymentWords)
   if (payCount > 0) {
     const score = Math.min(payCount * 7, 20)
     signals.push({ label: 'Αναφορά σε πληρωμή ή οφειλή', score })
@@ -177,7 +103,7 @@ export function analyzeText(text: string): ScamResult {
   }
 
   // 6. Reward / prize / refund bait
-  const rewardCount = countMatches(text, REWARD_WORDS)
+  const rewardCount = countMatches(text, greek.rewardWords)
   if (rewardCount > 0) {
     const score = Math.min(rewardCount * 10, 25)
     signals.push({ label: 'Υπόσχεση δώρου, βραβείου ή επιστροφής χρημάτων', score })
@@ -185,9 +111,9 @@ export function analyzeText(text: string): ScamResult {
   }
 
   // 7. Brand impersonation — checked per-brand against that brand's own domains
-  for (const [brand, { keywords, domains: brandDomains }] of Object.entries(BRAND_IMPERSONATION)) {
-    if (containsAny(text, keywords) && !brandDomainPresent(domains, brandDomains)) {
-      signals.push({ label: `Πιθανή παρουσίαση ως ${brand}`, score: 15 })
+  for (const brand of greek.brands) {
+    if (containsAny(text, brand.keywords) && !brandDomainPresent(domains, brand.domains)) {
+      signals.push({ label: `Πιθανή παρουσίαση ως ${brand.name}`, score: 15 })
       totalScore += 15
     }
   }
@@ -195,7 +121,7 @@ export function analyzeText(text: string): ScamResult {
   // 8. Suspicious email sender domain
   const suspiciousEmails = emails.filter((e) => {
     const domain = e.split('@')[1] ?? ''
-    return !isKnownDomain(domain)
+    return !isKnownDomainFromConfig(domain, config)
   })
   if (suspiciousEmails.length > 0) {
     signals.push({ label: 'Ύποπτη διεύθυνση email αποστολέα', score: 15 })
@@ -210,7 +136,6 @@ export function analyzeText(text: string): ScamResult {
   }
 
   // 10. Suspicious TLDs — score per matching domain, capped at 30
-  const suspiciousTlds = ['.ru', '.xyz', '.tk', '.top', '.click', '.online', '.site', '.shop', '.live']
   const suspiciousTldDomains = domains.filter((d) => suspiciousTlds.some((tld) => d.endsWith(tld)))
   if (suspiciousTldDomains.length > 0) {
     const score = Math.min(suspiciousTldDomains.length * 10, 30)
@@ -219,7 +144,7 @@ export function analyzeText(text: string): ScamResult {
   }
 
   // ── Hard rule: link + credential request = always dangerous ───────────────
-  const hasCredentialRequest = containsAny(text, CREDENTIAL_WORDS)
+  const hasCredentialRequest = containsAny(text, greek.credentialWords)
   if (messageHasLink && hasCredentialRequest) {
     totalScore = Math.max(totalScore, 70)
     if (!signals.some((s) => s.label.includes('σύνδεσμος'))) {

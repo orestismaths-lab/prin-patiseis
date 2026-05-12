@@ -1,0 +1,95 @@
+name: Update scam feeds
+
+on:
+  schedule:
+    - cron: '0 4 * * *'   # 04:00 UTC daily
+  workflow_dispatch:        # manual trigger from GitHub UI
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch phishing feeds
+        id: feeds
+        run: |
+          set -euo pipefail
+
+          # ── OpenPhish (plain text, one URL per line) ────────────────────────
+          curl -sSf --max-time 30 \
+            "https://openphish.com/feed.txt" \
+            -o /tmp/openphish_raw.txt || echo "" > /tmp/openphish_raw.txt
+
+          # Extract domains from URLs
+          grep -oP '(?<=https?://)[^/]+' /tmp/openphish_raw.txt \
+            | tr '[:upper:]' '[:lower:]' \
+            | sort -u > /tmp/domains_openphish.txt || true
+
+          # ── URLhaus (CSV, column 3 is the URL) ─────────────────────────────
+          curl -sSf --max-time 30 \
+            "https://urlhaus.abuse.ch/downloads/text_online/" \
+            -o /tmp/urlhaus_raw.txt || echo "" > /tmp/urlhaus_raw.txt
+
+          grep -v '^#' /tmp/urlhaus_raw.txt \
+            | grep -oP '(?<=https?://)[^/]+' \
+            | tr '[:upper:]' '[:lower:]' \
+            | sort -u > /tmp/domains_urlhaus.txt || true
+
+          # ── Merge, deduplicate, keep only .gr-related or suspicious TLDs ───
+          cat /tmp/domains_openphish.txt /tmp/domains_urlhaus.txt \
+            | sort -u \
+            | grep -E '\.(gr|ru|xyz|tk|top|click|online|site|shop|live)$' \
+            | head -500 > /tmp/merged_domains.txt || true
+
+          echo "domain_count=$(wc -l < /tmp/merged_domains.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
+
+      - name: Update scam-config.json
+        run: |
+          set -euo pipefail
+
+          python3 - << 'PYEOF'
+          import json, datetime, pathlib
+
+          config_path = pathlib.Path("config/scam-config.json")
+          config = json.loads(config_path.read_text())
+
+          # Load freshly fetched domains
+          new_domains = set()
+          domains_file = pathlib.Path("/tmp/merged_domains.txt")
+          if domains_file.exists():
+              new_domains = {
+                  line.strip() for line in domains_file.read_text().splitlines()
+                  if line.strip()
+              }
+
+          # Merge with existing, keep manualPhishingDomains untouched
+          existing = set(config.get("phishingDomains", []))
+          merged = sorted(existing | new_domains)
+
+          config["phishingDomains"] = merged
+          config["_meta"]["updatedAt"] = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+          config["_meta"]["version"] = config["_meta"].get("version", 1) + 1
+
+          config_path.write_text(json.dumps(config, ensure_ascii=False, indent=2) + "\n")
+          print(f"phishingDomains count: {len(merged)}")
+          PYEOF
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "scam-feed-bot"
+          git config user.email "bot@noreply.github.com"
+
+          if git diff --quiet config/scam-config.json; then
+            echo "No changes — nothing to commit."
+          else
+            git add config/scam-config.json
+            git commit -m "chore: update phishing feeds [skip ci]
+
+          Domains fetched: ${{ steps.feeds.outputs.domain_count }}
+          Sources: OpenPhish, URLhaus"
+            git push
+          fi
