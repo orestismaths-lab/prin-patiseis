@@ -6,7 +6,6 @@ import Image from 'next/image'
 
 interface Props {
   onAnalyze: (file: File) => void
-  disabled?: boolean
 }
 
 // ── Webcam modal (desktop) ────────────────────────────────────────────────────
@@ -112,7 +111,7 @@ function WebcamModal({ onCapture, onClose }: WebcamProps) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 
-export default function ImagePicker({ onAnalyze, disabled }: Props) {
+export default function ImagePicker({ onAnalyze }: Props) {
   const uploadRef = useRef<HTMLInputElement>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [file, setFile] = useState<File | null>(null)
@@ -120,13 +119,19 @@ export default function ImagePicker({ onAnalyze, disabled }: Props) {
 
   function handleFile(f: File | undefined) {
     if (!f) return
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev)
+      return URL.createObjectURL(f)
+    })
     setFile(f)
-    setPreview(URL.createObjectURL(f))
   }
 
   function clear() {
+    setPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev)
+      return null
+    })
     setFile(null)
-    setPreview(null)
     if (uploadRef.current) uploadRef.current.value = ''
   }
 
@@ -153,8 +158,7 @@ export default function ImagePicker({ onAnalyze, disabled }: Props) {
 
         <button
           onClick={() => onAnalyze(file)}
-          disabled={disabled}
-          className="w-full max-w-sm bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-xl font-semibold py-4 rounded-2xl transition-colors shadow"
+          className="w-full max-w-sm bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-4 rounded-2xl transition-colors shadow"
         >
           🔍 Έλεγχος
         </button>

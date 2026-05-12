@@ -2,68 +2,115 @@ import { ScamResult, ScamSignal, RiskLevel } from '@/types/scam'
 import { extractDomains, extractEmails, hasLink } from '@/lib/extractors'
 import { isKnownDomain } from '@/lib/domainRegistry'
 
+// ── Greek normalization ────────────────────────────────────────────────────────
+// OCR often strips accents (άμεσα → αμεσα, ΑΜΕΣΑ → αμεσα).
+// Normalize both the haystack and each keyword before matching.
+function norm(s: string): string {
+  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+}
+
 // ── Keyword dictionaries ──────────────────────────────────────────────────────
+// Single (unaccented) form per word — norm() handles the rest at match time.
 
 const URGENCY_WORDS = [
-  'αμεσα', 'άμεσα', 'επειγον', 'επείγον', 'τωρα', 'τώρα', 'σημερα', 'σήμερα',
-  'εντος', 'εντός', '24 ωρες', '24 ώρες', '48 ωρες', 'ληγει', 'λήγει',
-  'απαιτειται', 'απαιτείται', 'αμελλητι', 'αμελλητί', 'urgent', 'immediately',
+  'αμεσα', 'αμεσως', 'επειγον', 'τωρα', 'σημερα',
+  'εντος', '24 ωρες', '48 ωρες', 'ληγει', 'λιγει',
+  'απαιτειται', 'αμελλητι', 'urgent', 'immediately',
   'expire', 'expires', 'deadline',
 ]
 
 const FEAR_WORDS = [
-  'αποκλεισμος', 'αποκλεισμός', 'απενεργοποιηση', 'απενεργοποίηση',
-  'αναστολη', 'αναστολή', 'παγωμενος', 'παγωμένος', 'μπλοκαρε', 'blocked',
-  'suspended', 'disabled', 'κλειδωμα', 'κλείδωμα', 'κλειδωθηκε', 'κλειδώθηκε',
-  'διαγραφη', 'διαγραφή', 'απαγορευση', 'απαγόρευση', 'παραβιαση', 'παραβίαση',
-  'unauthorized', 'illegal', 'παρανομη', 'παράνομη',
+  'αποκλεισμος', 'απενεργοποιηση', 'αναστολη',
+  'παγωμενος', 'μπλοκαρε', 'blocked', 'suspended', 'disabled',
+  'κλειδωμα', 'κλειδωθηκε', 'διαγραφη', 'απαγορευση',
+  'παραβιαση', 'unauthorized', 'illegal', 'παρανομη',
 ]
 
 const CREDENTIAL_WORDS = [
-  'κωδικος', 'κωδικό', 'κωδικοί', 'κωδικοι', 'password', 'pin', 'otp',
-  'αριθμος καρτας', 'αριθμό καρτας', 'cvv', 'cvc', 'iban', 'τραπεζικα',
-  'τραπεζικά', 'στοιχεια', 'στοιχεία', 'επιβεβαιωση', 'επιβεβαίωση',
-  'verification', 'verify', 'αριθμος λογαριασμου', 'one-time', 'one time',
-  'αυθεντικοποιηση', 'αυθεντικοποίηση', '2fa', 'sms code',
+  'κωδικος', 'password', 'pin', 'otp',
+  'αριθμος καρτας', 'cvv', 'cvc', 'iban',
+  'τραπεζικα', 'στοιχεια', 'επιβεβαιωση',
+  'verification', 'verify', 'αριθμος λογαριασμου',
+  'one-time', 'one time', 'αυθεντικοποιηση', '2fa', 'sms code',
 ]
 
 const PAYMENT_WORDS = [
-  'πληρωση', 'πληρωμή', 'πληρωσε', 'πλήρωσε', 'payment', 'pay',
-  'χρεωση', 'χρέωση', 'οφειλη', 'οφειλή', 'ληξιπροθεσμη', 'ληξιπρόθεσμη',
-  'χρεος', 'χρέος', 'εκκρεμοτητα', 'εκκρεμότητα', 'ποσο', 'ποσό',
-  'ευρω', 'ευρώ', '€', 'euro', 'προστιμο', 'πρόστιμο', 'φορος', 'φόρος',
+  'πληρωση', 'πληρωσε', 'payment', 'pay',
+  'χρεωση', 'οφειλη', 'ληξιπροθεσμη', 'χρεος',
+  'εκκρεμοτητα', 'ποσο', 'ευρω', '€', 'euro',
+  'προστιμο', 'φορος',
 ]
 
 const REWARD_WORDS = [
-  'κερδισες', 'κέρδισες', 'νικητης', 'νικητής', 'δωρο', 'δώρο', 'prize',
-  'winner', 'congratulations', 'συγχαρητηρια', 'συγχαρητήρια', 'επιστροφη',
-  'επιστροφή', 'επιστροφη φορου', 'refund', 'cashback', 'bonus',
-  'εκπληξη', 'έκπληξη', 'δωρεαν', 'δωρεάν', 'free', 'gift',
+  'κερδισες', 'νικητης', 'δωρο', 'prize', 'winner',
+  'congratulations', 'συγχαρητηρια', 'επιστροφη',
+  'επιστροφη φορου', 'refund', 'cashback', 'bonus',
+  'εκπληξη', 'δωρεαν', 'free', 'gift',
 ]
 
-const BRAND_IMPERSONATION: Record<string, string[]> = {
-  'ΑΑΔΕ / Εφορία': ['ααδε', 'aade', 'εφορια', 'εφορία', 'taxisnet', 'myaade'],
-  'ΕΛΤΑ': ['ελτα', 'elta', 'ταχυδρομει', 'ταχυδρομεί', 'δεμα', 'δέμα', 'parcel'],
-  'ΔΕΗ': ['δεη', 'dei', 'ρευμα', 'ρεύμα', 'ηλεκτρικο', 'ηλεκτρικό'],
-  'Eurobank': ['eurobank'],
-  'Alpha Bank': ['alpha bank', 'alphabank'],
-  'Εθνική Τράπεζα': ['nbg', 'εθνικη τραπεζα', 'εθνική τράπεζα', 'national bank'],
-  'Τράπεζα Πειραιώς': ['πειραιως', 'πειραιώς', 'piraeus', 'winbank'],
-  'Cosmote / e-pay': ['cosmote', 'e-pay', 'epay'],
-  'ΕΦΚΑ / ΚΕΠΕΑ': ['εφκα', 'efka', 'κεπεα'],
-  'Ελληνική Αστυνομία': ['αστυνομια', 'αστυνομία', 'police', 'ελληνικη αστυνομια'],
+// Each brand has keywords AND its known legitimate domains.
+// Impersonation is flagged only when keywords appear but none of the brand's
+// own legitimate domains are present in the message.
+const BRAND_IMPERSONATION: Record<string, { keywords: string[]; domains: string[] }> = {
+  'ΑΑΔΕ / Εφορία': {
+    keywords: ['ααδε', 'aade', 'εφορια', 'taxisnet', 'myaade'],
+    domains: ['aade.gr', 'myaade.gov.gr', 'taxisnet.gov.gr'],
+  },
+  'ΕΛΤΑ': {
+    keywords: ['ελτα', 'elta', 'ταχυδρομει', 'δεμα', 'parcel'],
+    domains: ['elta.gr'],
+  },
+  'ΔΕΗ': {
+    keywords: ['δεη', 'dei', 'ρευμα', 'ηλεκτρικο'],
+    domains: ['dei.gr', 'deddie.gr'],
+  },
+  'Eurobank': {
+    keywords: ['eurobank'],
+    domains: ['eurobank.gr'],
+  },
+  'Alpha Bank': {
+    keywords: ['alpha bank', 'alphabank'],
+    domains: ['alpha.gr'],
+  },
+  'Εθνική Τράπεζα': {
+    keywords: ['nbg', 'εθνικη τραπεζα', 'national bank'],
+    domains: ['nbg.gr'],
+  },
+  'Τράπεζα Πειραιώς': {
+    keywords: ['πειραιως', 'piraeus', 'winbank'],
+    domains: ['piraeusbank.gr', 'winbank.gr'],
+  },
+  'Cosmote / e-pay': {
+    keywords: ['cosmote', 'e-pay', 'epay'],
+    domains: ['cosmote.gr'],
+  },
+  'ΕΦΚΑ': {
+    keywords: ['εφκα', 'efka'],
+    domains: ['efka.gov.gr', 'e-efka.gov.gr'],
+  },
+  'Ελληνική Αστυνομία': {
+    keywords: ['αστυνομια', 'police', 'ελληνικη αστυνομια'],
+    domains: [],
+  },
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function containsAny(text: string, words: string[]): boolean {
-  const lower = text.toLowerCase()
-  return words.some((w) => lower.includes(w))
+  const n = norm(text)
+  return words.some((w) => n.includes(norm(w)))
 }
 
 function countMatches(text: string, words: string[]): number {
-  const lower = text.toLowerCase()
-  return words.filter((w) => lower.includes(w)).length
+  const n = norm(text)
+  return words.filter((w) => n.includes(norm(w))).length
+}
+
+function brandDomainPresent(detectedDomains: string[], brandDomains: string[]): boolean {
+  if (brandDomains.length === 0) return false
+  return detectedDomains.some((d) =>
+    brandDomains.some((bd) => d === bd || d.endsWith('.' + bd))
+  )
 }
 
 // ── Main engine ───────────────────────────────────────────────────────────────
@@ -72,23 +119,19 @@ export function analyzeText(text: string): ScamResult {
   const signals: ScamSignal[] = []
   let totalScore = 0
 
-  const lower = text.toLowerCase()
   const domains = extractDomains(text)
   const emails = extractEmails(text)
   const messageHasLink = hasLink(text)
 
-  // 1. Unknown / suspicious domains
   const unknownDomains = domains.filter((d) => !isKnownDomain(d))
   const knownDomains = domains.filter((d) => isKnownDomain(d))
 
+  // 1. Unknown / suspicious domains
   if (unknownDomains.length > 0) {
     const score = Math.min(unknownDomains.length * 20, 40)
     signals.push({ label: 'Ύποπτος σύνδεσμος / domain', score })
     totalScore += score
   }
-
-  // Known domain present is a weak positive signal — don't reduce score here
-  // but do surface it to the user
 
   // 2. Urgency
   const urgencyCount = countMatches(text, URGENCY_WORDS)
@@ -130,15 +173,11 @@ export function analyzeText(text: string): ScamResult {
     totalScore += score
   }
 
-  // 7. Brand impersonation
-  for (const [brand, keywords] of Object.entries(BRAND_IMPERSONATION)) {
-    if (containsAny(lower, keywords)) {
-      // Only flag as impersonation if the known domain for that brand is NOT present
-      const brandDomain = domains.some((d) => isKnownDomain(d))
-      if (!brandDomain) {
-        signals.push({ label: `Πιθανή παρουσίαση ως ${brand}`, score: 15 })
-        totalScore += 15
-      }
+  // 7. Brand impersonation — checked per-brand against that brand's own domains
+  for (const [brand, { keywords, domains: brandDomains }] of Object.entries(BRAND_IMPERSONATION)) {
+    if (containsAny(text, keywords) && !brandDomainPresent(domains, brandDomains)) {
+      signals.push({ label: `Πιθανή παρουσίαση ως ${brand}`, score: 15 })
+      totalScore += 15
     }
   }
 
@@ -152,7 +191,7 @@ export function analyzeText(text: string): ScamResult {
     totalScore += 15
   }
 
-  // 9. Short suspicious TLDs (.ru, .xyz, .tk, .top, .click, etc.)
+  // 9. Suspicious TLDs
   const suspiciousTlds = ['.ru', '.xyz', '.tk', '.top', '.click', '.online', '.site', '.shop', '.live']
   const hasSuspiciousTld = domains.some((d) => suspiciousTlds.some((tld) => d.endsWith(tld)))
   if (hasSuspiciousTld) {
@@ -160,8 +199,7 @@ export function analyzeText(text: string): ScamResult {
     totalScore += 20
   }
 
-  // ── Hard rule ─────────────────────────────────────────────────────────────
-  // Link + credential request = always dangerous
+  // ── Hard rule: link + credential request = always dangerous ───────────────
   const hasCredentialRequest = containsAny(text, CREDENTIAL_WORDS)
   if (messageHasLink && hasCredentialRequest) {
     totalScore = Math.max(totalScore, 70)
@@ -170,7 +208,9 @@ export function analyzeText(text: string): ScamResult {
     }
   }
 
-  // ── Risk level ────────────────────────────────────────────────────────────
+  // ── Cap and classify ──────────────────────────────────────────────────────
+  totalScore = Math.min(totalScore, 100)
+
   let riskLevel: RiskLevel
   if (totalScore >= 61) riskLevel = 'dangerous'
   else if (totalScore >= 31) riskLevel = 'suspicious'

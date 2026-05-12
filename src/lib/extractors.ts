@@ -31,11 +31,6 @@ export function extractEmails(text: string): string[] {
   return [...new Set(text.match(emailRegex) ?? [])]
 }
 
-export function extractPhoneNumbers(text: string): string[] {
-  const phoneRegex = /(?:\+30|0030)?(?:\s|-)?(?:69|21|22|23|24|25|26|27|28|29)\d[\d\s\-]{6,10}/g
-  return [...new Set(text.match(phoneRegex) ?? [])]
-}
-
 export function hasLink(text: string): boolean {
   return /https?:\/\//i.test(text) || /\bwww\./i.test(text) || extractDomains(text).length > 0
 }
