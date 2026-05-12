@@ -27,17 +27,28 @@ const FEAR_WORDS = [
 ]
 
 const CREDENTIAL_WORDS = [
-  'κωδικος', 'password', 'pin', 'otp',
-  'αριθμος καρτας', 'cvv', 'cvc', 'iban',
-  'τραπεζικα', 'στοιχεια', 'επιβεβαιωση',
-  'verification', 'verify', 'αριθμος λογαριασμου',
+  // Stems cover all Greek declension forms:
+  // "κωδικ" matches κωδικός (nom) / κωδικό (acc) / κωδικοί (pl)
+  'κωδικ', 'password', 'pin', 'otp',
+  // Card number: cover nominative ("αριθμος καρτας") and accusative ("αριθμο καρτ")
+  'αριθμος καρτ', 'αριθμο καρτ', 'cvv', 'cvc', 'iban',
+  // "τραπεζικ" covers τραπεζικά / τραπεζικός
+  'τραπεζικ',
+  // "στοιχει" is a substring of στοιχεία/στοιχείο — covers all forms
+  'στοιχει',
+  // "επιβεβαιωσ" covers επιβεβαίωση / επιβεβαιώστε
+  'επιβεβαιωσ',
+  'verification', 'verify',
+  // "αριθμ" + "λογαριασμ" would be too broad — use multi-word phrase only
+  'αριθμος λογαριασμ', 'αριθμο λογαριασμ',
   'one-time', 'one time', 'αυθεντικοποιηση', '2fa', 'sms code',
 ]
 
 const PAYMENT_WORDS = [
   'πληρωση', 'πληρωσε', 'payment', 'pay',
   'χρεωση', 'οφειλη', 'ληξιπροθεσμη', 'χρεος',
-  'εκκρεμοτητα', 'ποσο', 'ευρω', '€', 'euro',
+  'εκκρεμοτητα', 'ποσο', 'ευρω', '€',
+  // "euro" omitted — substring of "eurobank", causes false positives on brand names
   'προστιμο', 'φορος',
 ]
 
@@ -191,12 +202,20 @@ export function analyzeText(text: string): ScamResult {
     totalScore += 15
   }
 
-  // 9. Suspicious TLDs
+  // 9. IP-address URLs — legitimate services never use raw IPs in links
+  const ipUrlRegex = /https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/i
+  if (ipUrlRegex.test(text)) {
+    signals.push({ label: 'Σύνδεσμος με IP διεύθυνση (χωρίς domain)', score: 25 })
+    totalScore += 25
+  }
+
+  // 10. Suspicious TLDs — score per matching domain, capped at 30
   const suspiciousTlds = ['.ru', '.xyz', '.tk', '.top', '.click', '.online', '.site', '.shop', '.live']
-  const hasSuspiciousTld = domains.some((d) => suspiciousTlds.some((tld) => d.endsWith(tld)))
-  if (hasSuspiciousTld) {
-    signals.push({ label: 'Ύποπτη κατάληξη domain (π.χ. .ru, .xyz, .tk)', score: 20 })
-    totalScore += 20
+  const suspiciousTldDomains = domains.filter((d) => suspiciousTlds.some((tld) => d.endsWith(tld)))
+  if (suspiciousTldDomains.length > 0) {
+    const score = Math.min(suspiciousTldDomains.length * 10, 30)
+    signals.push({ label: 'Ύποπτη κατάληξη domain (π.χ. .ru, .xyz, .tk)', score })
+    totalScore += score
   }
 
   // ── Hard rule: link + credential request = always dangerous ───────────────
@@ -212,8 +231,8 @@ export function analyzeText(text: string): ScamResult {
   totalScore = Math.min(totalScore, 100)
 
   let riskLevel: RiskLevel
-  if (totalScore >= 61) riskLevel = 'dangerous'
-  else if (totalScore >= 31) riskLevel = 'suspicious'
+  if (totalScore >= 60) riskLevel = 'dangerous'
+  else if (totalScore >= 30) riskLevel = 'suspicious'
   else riskLevel = 'low'
 
   return {
