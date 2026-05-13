@@ -1,10 +1,9 @@
 {
   "_meta": {
-    "version": 1,
-    "updatedAt": "2026-05-12T00:00:00Z",
+    "version": 2,
+    "updatedAt": "2026-05-13T06:43:12Z",
     "note": "Auto-updated daily by GitHub Actions. Manual overrides in manualPhishingDomains / greek sections."
   },
-
   "legitimateDomains": [
     "gov.gr",
     "aade.gr",
@@ -29,9 +28,7 @@
     "taxisnet.gov.gr",
     "e-efka.gov.gr"
   ],
-
   "phishingDomains": [],
-
   "manualPhishingDomains": [
     "myaade-gr.ru",
     "aade-online.xyz",
@@ -39,94 +36,225 @@
     "dei-payment.click",
     "efka-online.site"
   ],
-
   "suspiciousTlds": [
-    ".ru", ".xyz", ".tk", ".top", ".click",
-    ".online", ".site", ".shop", ".live"
+    ".ru",
+    ".xyz",
+    ".tk",
+    ".top",
+    ".click",
+    ".online",
+    ".site",
+    ".shop",
+    ".live"
   ],
-
   "greek": {
     "urgencyWords": [
-      "αμεσα", "αμεσως", "επειγον", "τωρα", "σημερα",
-      "εντος", "24 ωρες", "48 ωρες", "ληγει", "λιγει",
-      "απαιτειται", "αμελλητι", "urgent", "immediately",
-      "expire", "expires", "deadline"
+      "αμεσα",
+      "αμεσως",
+      "επειγον",
+      "τωρα",
+      "σημερα",
+      "εντος",
+      "24 ωρες",
+      "48 ωρες",
+      "ληγει",
+      "λιγει",
+      "απαιτειται",
+      "αμελλητι",
+      "urgent",
+      "immediately",
+      "expire",
+      "expires",
+      "deadline"
     ],
     "fearWords": [
-      "αποκλεισμος", "απενεργοποιηση", "αναστολη",
-      "παγωμενος", "μπλοκαρε", "blocked", "suspended", "disabled",
-      "κλειδωμα", "κλειδωθηκε", "διαγραφη", "απαγορευση",
-      "παραβιαση", "unauthorized", "illegal", "παρανομη"
+      "αποκλεισμος",
+      "απενεργοποιηση",
+      "αναστολη",
+      "παγωμενος",
+      "μπλοκαρε",
+      "blocked",
+      "suspended",
+      "disabled",
+      "κλειδωμα",
+      "κλειδωθηκε",
+      "διαγραφη",
+      "απαγορευση",
+      "παραβιαση",
+      "unauthorized",
+      "illegal",
+      "παρανομη"
     ],
     "credentialWords": [
-      "κωδικ", "password", "pin", "otp",
-      "αριθμος καρτ", "αριθμο καρτ", "cvv", "cvc", "iban",
-      "τραπεζικ", "στοιχει", "επιβεβαιωσ",
-      "verification", "verify",
-      "αριθμος λογαριασμ", "αριθμο λογαριασμ",
-      "one-time", "one time", "αυθεντικοποιηση", "2fa", "sms code"
+      "κωδικ",
+      "password",
+      "pin",
+      "otp",
+      "αριθμος καρτ",
+      "αριθμο καρτ",
+      "cvv",
+      "cvc",
+      "iban",
+      "τραπεζικ",
+      "στοιχει",
+      "επιβεβαιωσ",
+      "verification",
+      "verify",
+      "αριθμος λογαριασμ",
+      "αριθμο λογαριασμ",
+      "one-time",
+      "one time",
+      "αυθεντικοποιηση",
+      "2fa",
+      "sms code"
     ],
     "paymentWords": [
-      "πληρωση", "πληρωσε", "payment", "pay",
-      "χρεωση", "οφειλη", "ληξιπροθεσμη", "χρεος",
-      "εκκρεμοτητα", "ποσο", "ευρω", "€",
-      "προστιμο", "φορος"
+      "πληρωση",
+      "πληρωσε",
+      "payment",
+      "pay",
+      "χρεωση",
+      "οφειλη",
+      "ληξιπροθεσμη",
+      "χρεος",
+      "εκκρεμοτητα",
+      "ποσο",
+      "ευρω",
+      "€",
+      "προστιμο",
+      "φορος"
     ],
     "rewardWords": [
-      "κερδισες", "νικητης", "δωρο", "prize", "winner",
-      "congratulations", "συγχαρητηρια", "επιστροφη",
-      "επιστροφη φορου", "refund", "cashback", "bonus",
-      "εκπληξη", "δωρεαν", "free", "gift"
+      "κερδισες",
+      "νικητης",
+      "δωρο",
+      "prize",
+      "winner",
+      "congratulations",
+      "συγχαρητηρια",
+      "επιστροφη",
+      "επιστροφη φορου",
+      "refund",
+      "cashback",
+      "bonus",
+      "εκπληξη",
+      "δωρεαν",
+      "free",
+      "gift"
     ],
     "brands": [
       {
         "name": "ΑΑΔΕ / Εφορία",
-        "keywords": ["ααδε", "aade", "εφορια", "taxisnet", "myaade"],
-        "domains": ["aade.gr", "myaade.gov.gr", "taxisnet.gov.gr"]
+        "keywords": [
+          "ααδε",
+          "aade",
+          "εφορια",
+          "taxisnet",
+          "myaade"
+        ],
+        "domains": [
+          "aade.gr",
+          "myaade.gov.gr",
+          "taxisnet.gov.gr"
+        ]
       },
       {
         "name": "ΕΛΤΑ",
-        "keywords": ["ελτα", "elta", "ταχυδρομει", "δεμα", "parcel"],
-        "domains": ["elta.gr"]
+        "keywords": [
+          "ελτα",
+          "elta",
+          "ταχυδρομει",
+          "δεμα",
+          "parcel"
+        ],
+        "domains": [
+          "elta.gr"
+        ]
       },
       {
         "name": "ΔΕΗ",
-        "keywords": ["δεη", "dei", "ρευμα", "ηλεκτρικο"],
-        "domains": ["dei.gr", "deddie.gr"]
+        "keywords": [
+          "δεη",
+          "dei",
+          "ρευμα",
+          "ηλεκτρικο"
+        ],
+        "domains": [
+          "dei.gr",
+          "deddie.gr"
+        ]
       },
       {
         "name": "Eurobank",
-        "keywords": ["eurobank"],
-        "domains": ["eurobank.gr"]
+        "keywords": [
+          "eurobank"
+        ],
+        "domains": [
+          "eurobank.gr"
+        ]
       },
       {
         "name": "Alpha Bank",
-        "keywords": ["alpha bank", "alphabank"],
-        "domains": ["alpha.gr"]
+        "keywords": [
+          "alpha bank",
+          "alphabank"
+        ],
+        "domains": [
+          "alpha.gr"
+        ]
       },
       {
         "name": "Εθνική Τράπεζα",
-        "keywords": ["nbg", "εθνικη τραπεζα", "national bank"],
-        "domains": ["nbg.gr"]
+        "keywords": [
+          "nbg",
+          "εθνικη τραπεζα",
+          "national bank"
+        ],
+        "domains": [
+          "nbg.gr"
+        ]
       },
       {
         "name": "Τράπεζα Πειραιώς",
-        "keywords": ["πειραιως", "piraeus", "winbank"],
-        "domains": ["piraeusbank.gr", "winbank.gr"]
+        "keywords": [
+          "πειραιως",
+          "piraeus",
+          "winbank"
+        ],
+        "domains": [
+          "piraeusbank.gr",
+          "winbank.gr"
+        ]
       },
       {
         "name": "Cosmote / e-pay",
-        "keywords": ["cosmote", "e-pay", "epay"],
-        "domains": ["cosmote.gr"]
+        "keywords": [
+          "cosmote",
+          "e-pay",
+          "epay"
+        ],
+        "domains": [
+          "cosmote.gr"
+        ]
       },
       {
         "name": "ΕΦΚΑ",
-        "keywords": ["εφκα", "efka"],
-        "domains": ["efka.gov.gr", "e-efka.gov.gr"]
+        "keywords": [
+          "εφκα",
+          "efka"
+        ],
+        "domains": [
+          "efka.gov.gr",
+          "e-efka.gov.gr"
+        ]
       },
       {
         "name": "Ελληνική Αστυνομία",
-        "keywords": ["αστυνομια", "police", "ελληνικη αστυνομια"],
+        "keywords": [
+          "αστυνομια",
+          "police",
+          "ελληνικη αστυνομια"
+        ],
         "domains": []
       }
     ]
