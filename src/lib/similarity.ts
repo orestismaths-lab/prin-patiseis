@@ -36,7 +36,7 @@ export function brandStemFromDomain(domain: string): string {
 // Returns the matched stem if the core looks like it impersonates a known brand.
 export function findImpersonatedBrand(core: string, brandStems: string[]): string | null {
   for (const stem of brandStems) {
-    if (stem.length < 4) continue
+    if (stem.length < 3) continue
     if (core.includes(stem)) return stem
     if (core.length >= stem.length - 1 && levenshtein(core, stem) <= 1) return stem
   }
