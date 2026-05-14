@@ -1,0 +1,134 @@
+{
+  "_meta": {
+    "version": 1,
+    "updatedAt": "2026-05-12T00:00:00Z",
+    "note": "Auto-updated daily by GitHub Actions. Manual overrides in manualPhishingDomains / greek sections."
+  },
+
+  "legitimateDomains": [
+    "gov.gr",
+    "aade.gr",
+    "myaade.gov.gr",
+    "efka.gov.gr",
+    "minedu.gov.gr",
+    "ypes.gov.gr",
+    "elta.gr",
+    "dei.gr",
+    "deddie.gr",
+    "desfa.gr",
+    "eurobank.gr",
+    "alpha.gr",
+    "nbg.gr",
+    "piraeusbank.gr",
+    "winbank.gr",
+    "eurobank.com.gr",
+    "cosmote.gr",
+    "wind.gr",
+    "vodafone.gr",
+    "nova.gr",
+    "taxisnet.gov.gr",
+    "e-efka.gov.gr"
+  ],
+
+  "phishingDomains": [],
+
+  "manualPhishingDomains": [
+    "myaade-gr.ru",
+    "aade-online.xyz",
+    "elta-tracking.top",
+    "dei-payment.click",
+    "efka-online.site"
+  ],
+
+  "suspiciousTlds": [
+    ".ru", ".xyz", ".tk", ".top", ".click",
+    ".online", ".site", ".shop", ".live"
+  ],
+
+  "greek": {
+    "urgencyWords": [
+      "αμεσα", "αμεσως", "επειγον", "τωρα", "σημερα",
+      "εντος", "24 ωρες", "48 ωρες", "ληγει", "λιγει",
+      "απαιτειται", "αμελλητι", "urgent", "immediately",
+      "expire", "expires", "deadline"
+    ],
+    "fearWords": [
+      "αποκλεισμος", "απενεργοποιηση", "αναστολη",
+      "παγωμενος", "μπλοκαρε", "blocked", "suspended", "disabled",
+      "κλειδωμα", "κλειδωθηκε", "διαγραφη", "απαγορευση",
+      "παραβιαση", "unauthorized", "illegal", "παρανομη"
+    ],
+    "credentialWords": [
+      "κωδικ", "password", "pin", "otp",
+      "αριθμος καρτ", "αριθμο καρτ", "cvv", "cvc", "iban",
+      "τραπεζικ", "στοιχει", "επιβεβαιωσ",
+      "verification", "verify",
+      "αριθμος λογαριασμ", "αριθμο λογαριασμ",
+      "one-time", "one time", "αυθεντικοποιηση", "2fa", "sms code"
+    ],
+    "paymentWords": [
+      "πληρωση", "πληρωσε", "payment", "pay",
+      "χρεωση", "οφειλη", "ληξιπροθεσμη", "χρεος",
+      "εκκρεμοτητα", "ποσο", "ευρω", "€",
+      "προστιμο", "φορος"
+    ],
+    "rewardWords": [
+      "κερδισες", "νικητης", "δωρο", "prize", "winner",
+      "congratulations", "συγχαρητηρια", "επιστροφη",
+      "επιστροφη φορου", "refund", "cashback", "bonus",
+      "εκπληξη", "δωρεαν", "free", "gift"
+    ],
+    "brands": [
+      {
+        "name": "ΑΑΔΕ / Εφορία",
+        "keywords": ["ααδε", "aade", "εφορια", "taxisnet", "myaade"],
+        "domains": ["aade.gr", "myaade.gov.gr", "taxisnet.gov.gr"]
+      },
+      {
+        "name": "ΕΛΤΑ",
+        "keywords": ["ελτα", "elta", "ταχυδρομει", "δεμα", "parcel"],
+        "domains": ["elta.gr"]
+      },
+      {
+        "name": "ΔΕΗ",
+        "keywords": ["δεη", "dei", "ρευμα", "ηλεκτρικο"],
+        "domains": ["dei.gr", "deddie.gr"]
+      },
+      {
+        "name": "Eurobank",
+        "keywords": ["eurobank"],
+        "domains": ["eurobank.gr"]
+      },
+      {
+        "name": "Alpha Bank",
+        "keywords": ["alpha bank", "alphabank"],
+        "domains": ["alpha.gr"]
+      },
+      {
+        "name": "Εθνική Τράπεζα",
+        "keywords": ["nbg", "εθνικη τραπεζα", "national bank"],
+        "domains": ["nbg.gr"]
+      },
+      {
+        "name": "Τράπεζα Πειραιώς",
+        "keywords": ["πειραιως", "piraeus", "winbank"],
+        "domains": ["piraeusbank.gr", "winbank.gr"]
+      },
+      {
+        "name": "Cosmote / e-pay",
+        "keywords": ["cosmote", "e-pay", "epay"],
+        "domains": ["cosmote.gr"]
+      },
+      {
+        "name": "ΕΦΚΑ",
+        "keywords": ["εφκα", "efka"],
+        "domains": ["efka.gov.gr", "e-efka.gov.gr"]
+      },
+      {
+        "name": "Ελληνική Αστυνομία",
+        "keywords": ["αστυνομια", "police", "ελληνικη αστυνομια"],
+        "domains": []
+      }
+    ]
+  }
+}

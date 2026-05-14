@@ -63,7 +63,7 @@ jobs:
           python3 - << 'PYEOF'
           import json, datetime, pathlib
 
-          config_path = pathlib.Path("config/scam-config.json")
+          config_path = pathlib.Path("public/config/scam-config.json")
           config = json.loads(config_path.read_text())
 
           # Load freshly fetched domains
@@ -92,10 +92,10 @@ jobs:
           git config user.name  "scam-feed-bot"
           git config user.email "bot@noreply.github.com"
 
-          if git diff --quiet config/scam-config.json; then
+          if git diff --quiet public/config/scam-config.json; then
             echo "No changes — nothing to commit."
           else
-            git add config/scam-config.json
+            git add public/config/scam-config.json
             git commit -m "chore: update phishing feeds [skip ci]
 
           Domains fetched: ${{ steps.feeds.outputs.domain_count }}
