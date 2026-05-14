@@ -81,8 +81,8 @@ export default function ImagePicker({ onAnalyze }: Props) {
           <ImageIcon size={38} className="text-blue-600" strokeWidth={1.5} />
         </div>
         <div className="text-center">
-          <p className="text-xl font-bold text-blue-700">Φωτογράφισε ή επέλεξε εικόνα</p>
-          <p className="text-gray-400 text-sm mt-1">Στιγμιότυπο από SMS ή μήνυμα</p>
+          <p className="text-xl font-bold text-blue-700">Φωτογράφισε το ύποπτο μήνυμα</p>
+          <p className="text-gray-400 text-sm mt-1">ή επέλεξε εικόνα από τη γκαλερί σου</p>
         </div>
       </button>
     </>
