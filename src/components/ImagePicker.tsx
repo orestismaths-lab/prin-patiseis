@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { Upload, X } from 'lucide-react'
+import { ImageIcon, X, ScanSearch } from 'lucide-react'
 import Image from 'next/image'
 
 interface Props {
@@ -33,19 +33,19 @@ export default function ImagePicker({ onAnalyze }: Props) {
 
   if (preview && file) {
     return (
-      <div className="flex flex-col items-center gap-4 w-full">
-        <div className="relative w-full max-w-sm rounded-2xl overflow-hidden border-2 border-gray-200 shadow">
+      <div className="flex flex-col gap-4 w-full">
+        <div className="relative w-full rounded-3xl overflow-hidden border-2 border-gray-200 shadow-md bg-gray-50">
           <Image
             src={preview}
             alt="Επιλεγμένη εικόνα"
             width={600}
             height={400}
-            className="w-full object-contain bg-gray-50 max-h-72"
+            className="w-full object-contain max-h-72"
             unoptimized
           />
           <button
             onClick={clear}
-            className="absolute top-2 right-2 bg-white rounded-full p-1 shadow border border-gray-200"
+            className="absolute top-3 right-3 bg-white rounded-full p-1.5 shadow-md border border-gray-200 hover:bg-gray-100 transition-colors"
             aria-label="Αφαίρεση εικόνας"
           >
             <X size={18} className="text-gray-600" />
@@ -54,9 +54,10 @@ export default function ImagePicker({ onAnalyze }: Props) {
 
         <button
           onClick={() => onAnalyze(file)}
-          className="w-full max-w-sm bg-blue-600 hover:bg-blue-700 text-white text-xl font-semibold py-4 rounded-2xl transition-colors shadow"
+          className="w-full flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xl font-bold py-5 rounded-2xl transition-colors shadow-lg shadow-blue-200"
         >
-          🔍 Έλεγχος
+          <ScanSearch size={26} />
+          Έλεγχος μηνύματος
         </button>
       </div>
     )
@@ -64,7 +65,6 @@ export default function ImagePicker({ onAnalyze }: Props) {
 
   return (
     <>
-      {/* Hidden file input — on mobile opens native picker (camera + gallery) */}
       <input
         ref={uploadRef}
         type="file"
@@ -75,10 +75,15 @@ export default function ImagePicker({ onAnalyze }: Props) {
 
       <button
         onClick={() => uploadRef.current?.click()}
-        className="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-blue-50 text-xl font-semibold py-5 rounded-2xl transition-colors shadow w-full"
+        className="w-full flex flex-col items-center gap-4 bg-white border-2 border-dashed border-blue-300 hover:border-blue-500 hover:bg-blue-50 active:bg-blue-100 rounded-3xl py-10 px-6 transition-colors shadow-sm group"
       >
-        <Upload size={26} />
-        Ανέβασε screenshot ή φωτογράφισε
+        <div className="w-20 h-20 bg-blue-100 group-hover:bg-blue-200 rounded-full flex items-center justify-center transition-colors">
+          <ImageIcon size={38} className="text-blue-600" strokeWidth={1.5} />
+        </div>
+        <div className="text-center">
+          <p className="text-xl font-bold text-blue-700">Φωτογράφισε ή επέλεξε εικόνα</p>
+          <p className="text-gray-400 text-sm mt-1">Στιγμιότυπο από SMS ή μήνυμα</p>
+        </div>
       </button>
     </>
   )

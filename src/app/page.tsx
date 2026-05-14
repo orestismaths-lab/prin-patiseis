@@ -7,7 +7,7 @@ import { runOcr } from '@/lib/ocr'
 import { analyzeText } from '@/lib/scamEngine'
 import { loadConfig } from '@/lib/configLoader'
 import { ScamResult } from '@/types/scam'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, PenLine } from 'lucide-react'
 
 type Stage = 'idle' | 'ocr' | 'manual' | 'done' | 'error'
 
@@ -75,41 +75,55 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-8">
+    <main className="min-h-screen flex flex-col items-center px-4 py-8 pb-16">
       <div className="w-full max-w-md flex flex-col gap-6">
 
         {/* Header */}
-        <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={32} className="text-blue-600" />
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Πριν Πατήσεις</h1>
+        <div className="flex flex-col items-center gap-4 text-center pt-2">
+          <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-200">
+            <ShieldCheck size={40} className="text-white" strokeWidth={1.8} />
           </div>
-          <p className="text-gray-500 text-base leading-snug max-w-xs">
-            Έλεγξε αν ένα μήνυμα είναι ύποπτο πριν πατήσεις link ή δώσεις στοιχεία.
-          </p>
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 tracking-tight">Πριν Πατήσεις</h1>
+            <p className="text-gray-500 text-base leading-snug max-w-xs mt-2">
+              Έλεγξε αν ένα μήνυμα είναι ύποπτο πριν πατήσεις link ή δώσεις στοιχεία.
+            </p>
+          </div>
         </div>
 
         {stage === 'idle' && (
-          <>
+          <div className="flex flex-col gap-4">
             <ImagePicker onAnalyze={handleAnalyze} />
-            <div className="bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3 text-sm text-blue-700 leading-snug text-center">
-              🔒 Δεν διαβάζουμε τα SMS σου. Ελέγχεις μόνο την εικόνα που επιλέγεις.
+
+            <button
+              onClick={() => setStage('manual')}
+              className="flex items-center justify-center gap-2 text-blue-600 font-semibold text-base py-3 rounded-2xl border-2 border-blue-200 bg-white hover:bg-blue-50 transition-colors"
+            >
+              <PenLine size={20} />
+              Πληκτρολόγησε το μήνυμα
+            </button>
+
+            <div className="flex items-center gap-2 bg-white rounded-2xl px-4 py-3 shadow-sm border border-gray-100">
+              <span className="text-xl">🔒</span>
+              <p className="text-sm text-gray-500 leading-snug">
+                Δεν διαβάζουμε τα SMS σου. Ελέγχεις μόνο την εικόνα που επιλέγεις.
+              </p>
             </div>
-          </>
+          </div>
         )}
 
         {stage === 'ocr' && (
-          <div className="flex flex-col items-center gap-5 py-8">
-            <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center gap-6 py-10 px-6">
+            <div className="w-20 h-20 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin" />
             <div className="text-center">
-              <p className="text-gray-700 font-semibold text-lg">
+              <p className="text-gray-800 font-bold text-xl">
                 {ocrProgress < 30 ? 'Φορτώνω…' : 'Διαβάζω το μήνυμα…'}
               </p>
               <p className="text-gray-400 text-sm mt-1">{ocrProgress}% ολοκληρώθηκε</p>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
               <div
-                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
                 style={{ width: `${ocrProgress}%` }}
               />
             </div>
@@ -117,32 +131,35 @@ export default function Home() {
         )}
 
         {stage === 'error' && (
-          <div className="flex flex-col items-center gap-4 py-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
-              <p className="text-amber-800 font-semibold text-base">⚠️ {errorMsg}</p>
+          <div className="flex flex-col gap-4">
+            <div className="bg-amber-50 border-2 border-amber-200 rounded-3xl p-6 text-center shadow-sm">
+              <div className="text-4xl mb-3">⚠️</div>
+              <p className="text-amber-800 font-semibold text-base leading-snug">{errorMsg}</p>
             </div>
             <button
               onClick={reset}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-lg py-4 rounded-2xl transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold text-xl py-5 rounded-2xl transition-colors shadow-lg shadow-blue-200"
             >
               Δοκίμασε ξανά
             </button>
             <button
               onClick={() => setStage('manual')}
-              className="w-full bg-white border-2 border-gray-200 hover:border-gray-400 text-gray-600 font-semibold py-4 rounded-2xl transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-600 font-semibold py-4 rounded-2xl transition-colors"
             >
-              ✏️ Πληκτρολόγησε το μήνυμα χειροκίνητα
+              <PenLine size={20} />
+              Πληκτρολόγησε το μήνυμα
             </button>
           </div>
         )}
 
         {stage === 'manual' && (
-          <div className="flex flex-col gap-4">
-            <p className="text-gray-600 text-sm text-center">
-              Γράψε ή κάνε paste το κείμενο του μηνύματος παρακάτω.
-            </p>
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-5 p-5">
+            <div className="text-center">
+              <p className="text-gray-800 font-bold text-lg">Πληκτρολόγησε το μήνυμα</p>
+              <p className="text-gray-400 text-sm mt-1">Γράψε ή κάνε paste το κείμενο παρακάτω</p>
+            </div>
             <textarea
-              className="w-full border-2 border-gray-200 focus:border-blue-400 rounded-2xl p-4 text-base text-gray-800 resize-none outline-none min-h-[140px]"
+              className="w-full border-2 border-gray-200 focus:border-blue-400 focus:outline-none rounded-2xl p-4 text-base text-gray-800 resize-none min-h-[140px] bg-gray-50 transition-colors"
               placeholder="π.χ. «Ο λογαριασμός σας έχει αποκλειστεί. Πατήστε εδώ για επαλήθευση…»"
               value={manualText}
               onChange={(e) => setManualText(e.target.value)}
@@ -151,13 +168,13 @@ export default function Home() {
             <button
               onClick={handleManualSubmit}
               disabled={manualText.trim().length < 5}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white font-semibold text-lg py-4 rounded-2xl transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 active:bg-blue-800 text-white font-bold text-xl py-5 rounded-2xl transition-colors shadow-lg shadow-blue-100"
             >
               🔍 Έλεγχος
             </button>
             <button
               onClick={reset}
-              className="text-sm text-gray-400 hover:text-gray-600 text-center"
+              className="text-sm text-gray-400 hover:text-gray-600 text-center transition-colors"
             >
               ← Πίσω
             </button>
@@ -168,7 +185,7 @@ export default function Home() {
           <ResultCard result={result} onReset={reset} />
         )}
 
-        <footer className="text-center text-xs text-gray-400 pb-4 leading-snug">
+        <footer className="text-center text-xs text-gray-400 leading-snug">
           Η εφαρμογή δίνει ενδείξεις κινδύνου, όχι απόλυτη βεβαιότητα.
         </footer>
       </div>

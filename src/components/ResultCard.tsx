@@ -13,10 +13,12 @@ const LEVEL_CONFIG = {
   low: {
     icon: ShieldCheck,
     label: 'Χαμηλός κίνδυνος',
-    bg: 'bg-green-50',
-    border: 'border-green-300',
-    iconColor: 'text-green-600',
-    labelColor: 'text-green-800',
+    headerBg: 'bg-emerald-600',
+    headerShadow: 'shadow-emerald-200',
+    border: 'border-emerald-200',
+    dotColor: 'bg-emerald-400',
+    scoreBar: 'bg-emerald-500',
+    labelColor: 'text-emerald-700',
     recommendation: 'Δεν βρέθηκαν ισχυρά σημάδια απάτης, αλλά συνέχισε προσεκτικά.',
     actions: [
       'Επαλήθευσε τον αποστολέα από την επίσημη πηγή.',
@@ -25,31 +27,35 @@ const LEVEL_CONFIG = {
   },
   suspicious: {
     icon: AlertTriangle,
-    label: 'Ύποπτο',
-    bg: 'bg-amber-50',
-    border: 'border-amber-300',
-    iconColor: 'text-amber-500',
-    labelColor: 'text-amber-800',
-    recommendation: 'Έλεγξε το μήνυμα από την επίσημη εφαρμογή ή το επίσημο site πριν κάνεις οτιδήποτε.',
+    label: 'Ύποπτο μήνυμα',
+    headerBg: 'bg-amber-500',
+    headerShadow: 'shadow-amber-200',
+    border: 'border-amber-200',
+    dotColor: 'bg-amber-400',
+    scoreBar: 'bg-amber-400',
+    labelColor: 'text-amber-700',
+    recommendation: 'Έλεγξε από την επίσημη εφαρμογή ή site πριν κάνεις οτιδήποτε.',
     actions: [
       'Μην πατήσεις links μέσα στο μήνυμα.',
       'Μπες στο επίσημο site ή την εφαρμογή απευθείας.',
-      'Αν το μήνυμα ζητά στοιχεία, επικοινώνησε τηλεφωνικά με τον αποστολέα.',
+      'Αν ζητά στοιχεία, επικοινώνησε τηλεφωνικά με τον αποστολέα.',
     ],
   },
   dangerous: {
     icon: ShieldAlert,
-    label: 'Επικίνδυνο',
-    bg: 'bg-red-50',
-    border: 'border-red-300',
-    iconColor: 'text-red-600',
-    labelColor: 'text-red-800',
-    recommendation: 'Μην πατήσεις το link και μη δώσεις στοιχεία.',
+    label: 'Επικίνδυνο!',
+    headerBg: 'bg-red-600',
+    headerShadow: 'shadow-red-200',
+    border: 'border-red-200',
+    dotColor: 'bg-red-500',
+    scoreBar: 'bg-red-500',
+    labelColor: 'text-red-700',
+    recommendation: 'Μην πατήσεις κανένα link και μη δώσεις στοιχεία.',
     actions: [
-      'Διέγραψε το μήνυμα.',
+      'Διέγραψε το μήνυμα αμέσως.',
       'Μην απαντήσεις, μην καλέσεις ξανά αν κάλεσαν.',
       'Αν έδωσες ήδη στοιχεία, επικοινώνησε αμέσως με την τράπεζά σου.',
-      'Μπορείς να αναφέρεις την απάτη στη Δίωξη Ηλεκτρονικού Εγκλήματος (11188).',
+      'Μπορείς να αναφέρεις την απάτη στη Δίωξη Ηλεκτρονικού Εγκλήματος: 11188.',
     ],
   },
 }
@@ -57,14 +63,14 @@ const LEVEL_CONFIG = {
 export default function ResultCard({ result, onReset }: Props) {
   const [shared, setShared] = useState(false)
 
-  const config = LEVEL_CONFIG[result.riskLevel]
-  const Icon = config.icon
+  const cfg = LEVEL_CONFIG[result.riskLevel]
+  const Icon = cfg.icon
 
   function buildShareText(): string {
     const lines = [
-      `Αποτέλεσμα: ${config.label} (${result.totalScore}/100)`,
+      `Αποτέλεσμα: ${cfg.label} (${result.totalScore}/100)`,
       '',
-      `Σύσταση: ${config.recommendation}`,
+      `Σύσταση: ${cfg.recommendation}`,
     ]
     if (result.signals.length > 0) {
       lines.push('', 'Τι εντοπίστηκε:')
@@ -81,9 +87,7 @@ export default function ResultCard({ result, onReset }: Props) {
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({ title: 'Πριν Πατήσεις — Αποτέλεσμα', text })
-      } catch {
-        // user cancelled — no-op
-      }
+      } catch { /* user cancelled */ }
     } else {
       await navigator.clipboard.writeText(text)
       setShared(true)
@@ -92,95 +96,113 @@ export default function ResultCard({ result, onReset }: Props) {
   }
 
   return (
-    <div className={`w-full rounded-2xl border-2 ${config.bg} ${config.border} p-5 flex flex-col gap-4 shadow`}>
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Icon size={36} className={config.iconColor} />
-        <div>
-          <div className={`text-2xl font-bold ${config.labelColor}`}>{config.label}</div>
-          <div className="text-sm text-gray-500">Σκορ κινδύνου: {result.totalScore} / 100</div>
+    <div className={`w-full rounded-3xl border-2 ${cfg.border} bg-white shadow-xl overflow-hidden`}>
+
+      {/* Coloured header band */}
+      <div className={`${cfg.headerBg} px-6 py-5 flex items-center gap-4 shadow-lg ${cfg.headerShadow}`}>
+        <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shrink-0">
+          <Icon size={32} className="text-white" strokeWidth={2} />
+        </div>
+        <div className="text-white">
+          <div className="text-2xl font-bold leading-tight">{cfg.label}</div>
+          <div className="text-white/80 text-sm mt-0.5">Σκορ κινδύνου: {result.totalScore} / 100</div>
         </div>
       </div>
 
-      {/* Recommendation */}
-      <div className="text-base font-semibold text-gray-800 leading-snug">
-        {config.recommendation}
+      {/* Score bar */}
+      <div className="px-6 pt-5">
+        <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+          <div
+            className={`${cfg.scoreBar} h-3 rounded-full transition-all duration-500`}
+            style={{ width: `${result.totalScore}%` }}
+          />
+        </div>
       </div>
 
-      {/* Signals */}
-      {result.signals.length > 0 && (
-        <div>
-          <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-            Τι εντοπίστηκε
+      <div className="px-6 py-5 flex flex-col gap-5">
+
+        {/* Recommendation */}
+        <div className={`text-base font-semibold ${cfg.labelColor} leading-snug`}>
+          {cfg.recommendation}
+        </div>
+
+        {/* Signals */}
+        {result.signals.length > 0 && (
+          <div>
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+              Τι εντοπίστηκε
+            </div>
+            <ul className="flex flex-col gap-3">
+              {result.signals.map((s, i) => (
+                <li key={i} className="flex flex-col gap-0.5">
+                  <div className="flex items-start gap-3">
+                    <div className={`mt-1.5 w-2.5 h-2.5 rounded-full shrink-0 ${cfg.dotColor}`} />
+                    <span className="text-base font-medium text-gray-800 leading-snug">{s.label}</span>
+                  </div>
+                  {s.detail && (
+                    <div className="ml-5 text-xs text-gray-400 font-mono break-all leading-relaxed">{s.detail}</div>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="flex flex-col gap-2">
-            {result.signals.map((s, i) => (
-              <li key={i} className="flex flex-col gap-0.5">
-                <div className="flex items-start gap-2 text-sm text-gray-700">
-                  <span className="mt-0.5 text-gray-400 shrink-0">•</span>
-                  <span>{s.label}</span>
+        )}
+
+        {/* Detected domains */}
+        {result.detectedDomains.length > 0 && (
+          <div>
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+              Σύνδεσμοι που βρέθηκαν
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {result.detectedDomains.map((d, i) => (
+                <span key={i} className="bg-gray-100 text-sm text-gray-600 px-3 py-1 rounded-xl font-mono">
+                  {d}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="bg-gray-50 rounded-2xl p-4">
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
+            Τι να κάνεις τώρα
+          </div>
+          <ul className="flex flex-col gap-2.5">
+            {cfg.actions.map((a, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-xs font-bold text-gray-500">{i + 1}</span>
                 </div>
-                {s.detail && (
-                  <div className="ml-4 text-xs text-gray-400 font-mono break-all">{s.detail}</div>
-                )}
+                <span className="text-base text-gray-700 leading-snug">{a}</span>
               </li>
             ))}
           </ul>
         </div>
-      )}
 
-      {/* Detected domains */}
-      {result.detectedDomains.length > 0 && (
-        <div>
-          <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
-            Σύνδεσμοι που βρέθηκαν
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {result.detectedDomains.map((d, i) => (
-              <span key={i} className="bg-white border border-gray-300 text-xs text-gray-600 px-2 py-1 rounded-lg font-mono">
-                {d}
-              </span>
-            ))}
-          </div>
+        {/* Disclaimer */}
+        <p className="text-xs text-gray-400 italic text-center leading-snug">
+          Η εφαρμογή δίνει ενδείξεις κινδύνου, όχι απόλυτη βεβαιότητα.
+        </p>
+
+        {/* Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={onReset}
+            className="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-700 font-semibold py-4 rounded-2xl transition-colors text-base"
+          >
+            <RotateCcw size={18} />
+            Νέος έλεγχος
+          </button>
+          <button
+            onClick={handleShare}
+            className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold py-4 rounded-2xl transition-colors text-base shadow-md shadow-blue-200"
+          >
+            {shared ? <Check size={18} /> : <Share2 size={18} />}
+            {shared ? 'Αντιγράφηκε' : 'Μοιράσου'}
+          </button>
         </div>
-      )}
-
-      {/* Next actions */}
-      <div>
-        <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
-          Τι να κάνεις τώρα
-        </div>
-        <ul className="flex flex-col gap-1">
-          {config.actions.map((a, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-              <span className="font-bold text-gray-400 shrink-0">{i + 1}.</span>
-              {a}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Disclaimer */}
-      <p className="text-xs text-gray-400 italic leading-snug">
-        Η εφαρμογή δίνει ενδείξεις κινδύνου, όχι απόλυτη βεβαιότητα.
-      </p>
-
-      {/* Buttons */}
-      <div className="flex gap-3 pt-1">
-        <button
-          onClick={onReset}
-          className="flex-1 flex items-center justify-center gap-2 bg-white border-2 border-gray-200 hover:border-gray-400 text-gray-700 font-semibold py-3 rounded-xl transition-colors"
-        >
-          <RotateCcw size={18} />
-          Νέος έλεγχος
-        </button>
-        <button
-          onClick={handleShare}
-          className="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors"
-        >
-          {shared ? <Check size={18} className="text-green-600" /> : <Share2 size={18} />}
-          {shared ? 'Αντιγράφηκε' : 'Μοιράσου'}
-        </button>
       </div>
     </div>
   )
