@@ -116,7 +116,7 @@ export default function Home() {
               className="flex items-center justify-center gap-2 text-gray-400 hover:text-blue-600 font-medium text-sm transition-colors py-1"
             >
               <Smartphone size={16} />
-              Οδηγίες για iPhone Shortcut
+              Πώς να το προσθέσεις στην αρχική οθόνη
             </Link>
           </div>
         )}
