@@ -1,15 +1,12 @@
 import { ScamResult, ScamSignal, RiskLevel, ScamConfig } from '@/types/scam'
-import { extractDomains, extractEmails, hasLink } from '@/lib/extractors'
+import { extractDomains, extractEmails, hasLink, extractPhoneNumbers, isPremiumRatePhone } from '@/lib/extractors'
+import { domainCore, brandStemFromDomain, findImpersonatedBrand } from '@/lib/similarity'
 import { DEFAULT_CONFIG } from '@/lib/defaultConfig'
 
-// ── Greek normalization ────────────────────────────────────────────────────────
-// OCR often strips accents (άμεσα → αμεσα, ΑΜΕΣΑ → αμεσα).
-// Normalize both the haystack and each keyword before matching.
+// OCR often strips accents (άμεσα → αμεσα). Normalize both sides before matching.
 function norm(s: string): string {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function containsAny(text: string, words: string[]): boolean {
   const n = norm(text)
@@ -41,8 +38,6 @@ function brandDomainPresent(detectedDomains: string[], brandDomains: string[]): 
   )
 }
 
-// ── Main engine ───────────────────────────────────────────────────────────────
-
 export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): ScamResult {
   const signals: ScamSignal[] = []
   let totalScore = 0
@@ -51,26 +46,27 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
 
   const domains = extractDomains(text)
   const emails = extractEmails(text)
+  const phones = extractPhoneNumbers(text)
   const messageHasLink = hasLink(text)
 
   const unknownDomains = domains.filter((d) => !isKnownDomainFromConfig(d, config))
   const knownDomains = domains.filter((d) => isKnownDomainFromConfig(d, config))
 
-  // 0. Known phishing domains — immediate dangerous signal
+  // 0. Known phishing domains
   const knownPhishing = domains.filter((d) => isPhishingDomain(d, config))
   if (knownPhishing.length > 0) {
-    signals.push({ label: 'Γνωστός phishing σύνδεσμος', score: 50 })
+    signals.push({ label: 'Γνωστός phishing σύνδεσμος', score: 50, detail: knownPhishing.join(', ') })
     totalScore += 50
   }
 
   // 1. Unknown / suspicious domains
   if (unknownDomains.length > 0) {
     const score = Math.min(unknownDomains.length * 20, 40)
-    signals.push({ label: 'Ύποπτος σύνδεσμος / domain', score })
+    signals.push({ label: 'Ύποπτος σύνδεσμος / domain', score, detail: unknownDomains.join(', ') })
     totalScore += score
   }
 
-  // 2. Urgency
+  // 2. Urgency words
   const urgencyCount = countMatches(text, greek.urgencyWords)
   if (urgencyCount > 0) {
     const score = Math.min(urgencyCount * 8, 20)
@@ -110,7 +106,7 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     totalScore += score
   }
 
-  // 7. Brand impersonation — checked per-brand against that brand's own domains
+  // 7. Brand impersonation — per-brand check against that brand's own domains
   for (const brand of greek.brands) {
     if (containsAny(text, brand.keywords) && !brandDomainPresent(domains, brand.domains)) {
       signals.push({ label: `Πιθανή παρουσίαση ως ${brand.name}`, score: 15 })
@@ -124,23 +120,54 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     return !isKnownDomainFromConfig(domain, config)
   })
   if (suspiciousEmails.length > 0) {
-    signals.push({ label: 'Ύποπτη διεύθυνση email αποστολέα', score: 15 })
+    signals.push({ label: 'Ύποπτη διεύθυνση email αποστολέα', score: 15, detail: suspiciousEmails.join(', ') })
     totalScore += 15
   }
 
-  // 9. IP-address URLs — legitimate services never use raw IPs in links
+  // 9. IP-address URLs
   const ipUrlRegex = /https?:\/\/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/i
-  if (ipUrlRegex.test(text)) {
-    signals.push({ label: 'Σύνδεσμος με IP διεύθυνση (χωρίς domain)', score: 25 })
+  const ipMatch = text.match(ipUrlRegex)
+  if (ipMatch) {
+    signals.push({ label: 'Σύνδεσμος με IP διεύθυνση (χωρίς domain)', score: 25, detail: ipMatch[0] })
     totalScore += 25
   }
 
-  // 10. Suspicious TLDs — score per matching domain, capped at 30
+  // 10. Suspicious TLDs
   const suspiciousTldDomains = domains.filter((d) => suspiciousTlds.some((tld) => d.endsWith(tld)))
   if (suspiciousTldDomains.length > 0) {
     const score = Math.min(suspiciousTldDomains.length * 10, 30)
-    signals.push({ label: 'Ύποπτη κατάληξη domain (π.χ. .ru, .xyz, .tk)', score })
+    const tlds = [...new Set(suspiciousTldDomains.map((d) => '.' + d.split('.').pop()))].join(', ')
+    signals.push({ label: 'Ύποπτη κατάληξη domain (π.χ. .ru, .xyz, .tk)', score, detail: tlds })
     totalScore += score
+  }
+
+  // 11. Premium-rate phone numbers (901x, 909x)
+  const premiumPhones = phones.filter(isPremiumRatePhone)
+  if (premiumPhones.length > 0) {
+    signals.push({ label: 'Αριθμός υπερχρέωσης (premium rate)', score: 30, detail: premiumPhones.join(', ') })
+    totalScore += 30
+  }
+
+  // 12. Domain typosquatting via Levenshtein similarity
+  const brandStems = [
+    ...config.legitimateDomains.map(brandStemFromDomain),
+    ...config.greek.brands.flatMap((b) => b.domains.map(brandStemFromDomain)),
+  ]
+  const uniqueStems = [...new Set(brandStems)].filter((s) => s.length >= 4)
+
+  for (const domain of unknownDomains) {
+    if (isPhishingDomain(domain, config)) continue
+    const core = domainCore(domain)
+    const hit = findImpersonatedBrand(core, uniqueStems)
+    if (hit) {
+      signals.push({
+        label: 'Πιθανό typosquatting domain',
+        score: 25,
+        detail: `"${domain}" μοιάζει με γνωστό domain (${hit})`,
+      })
+      totalScore += 25
+      break // one signal is enough even if multiple domains match
+    }
   }
 
   // ── Hard rule: link + credential request = always dangerous ───────────────
@@ -152,7 +179,6 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     }
   }
 
-  // ── Cap and classify ──────────────────────────────────────────────────────
   totalScore = Math.min(totalScore, 100)
 
   let riskLevel: RiskLevel

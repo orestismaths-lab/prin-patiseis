@@ -3,6 +3,7 @@ export type RiskLevel = 'low' | 'suspicious' | 'dangerous'
 export interface ScamSignal {
   label: string
   score: number
+  detail?: string
 }
 
 export interface ScamResult {

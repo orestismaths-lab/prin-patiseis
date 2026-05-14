@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import ImagePicker from '@/components/ImagePicker'
 import ResultCard from '@/components/ResultCard'
 import { runOcr } from '@/lib/ocr'
@@ -52,6 +52,19 @@ export default function Home() {
     setResult(analyzeText(trimmed, config))
     setStage('done')
   }
+
+  // Handle incoming ?text= from PWA share target or iOS shortcut
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const sharedText = params.get('text') || params.get('url')
+    if (sharedText && sharedText.trim().length >= 5) {
+      const trimmed = sharedText.trim()
+      loadConfig().then((config) => {
+        setResult(analyzeText(trimmed, config))
+        setStage('done')
+      })
+    }
+  }, [])
 
   function reset() {
     setStage('idle')

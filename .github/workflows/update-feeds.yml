@@ -39,11 +39,20 @@ jobs:
             | tr '[:upper:]' '[:lower:]' \
             | sort -u > /tmp/domains_urlhaus.txt || true
 
+          # ── Phishing.Database (mitchellkrogza, one domain per line, no auth) ──
+          curl -sSf --max-time 30 \
+            "https://raw.githubusercontent.com/mitchellkrogza/Phishing.Database/master/phishing-domains-ACTIVE.txt" \
+            -o /tmp/phishingdb_raw.txt || echo "" > /tmp/phishingdb_raw.txt
+
+          grep -v '^#' /tmp/phishingdb_raw.txt \
+            | tr '[:upper:]' '[:lower:]' \
+            | sort -u > /tmp/domains_phishingdb.txt || true
+
           # ── Merge, deduplicate, keep only .gr-related or suspicious TLDs ───
-          cat /tmp/domains_openphish.txt /tmp/domains_urlhaus.txt \
+          cat /tmp/domains_openphish.txt /tmp/domains_urlhaus.txt /tmp/domains_phishingdb.txt \
             | sort -u \
             | grep -E '\.(gr|ru|xyz|tk|top|click|online|site|shop|live)$' \
-            | head -500 > /tmp/merged_domains.txt || true
+            | head -1000 > /tmp/merged_domains.txt || true
 
           echo "domain_count=$(wc -l < /tmp/merged_domains.txt | tr -d ' ')" >> "$GITHUB_OUTPUT"
 

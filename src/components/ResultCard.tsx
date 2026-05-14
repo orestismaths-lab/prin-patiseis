@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { ScamResult } from '@/types/scam'
-import { RotateCcw, Copy, Check, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react'
+import { RotateCcw, Share2, Check, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react'
 
 interface Props {
   result: ScamResult
@@ -17,8 +17,7 @@ const LEVEL_CONFIG = {
     border: 'border-green-300',
     iconColor: 'text-green-600',
     labelColor: 'text-green-800',
-    recommendation:
-      'Δεν βρέθηκαν ισχυρά σημάδια απάτης, αλλά συνέχισε προσεκτικά.',
+    recommendation: 'Δεν βρέθηκαν ισχυρά σημάδια απάτης, αλλά συνέχισε προσεκτικά.',
     actions: [
       'Επαλήθευσε τον αποστολέα από την επίσημη πηγή.',
       'Αν αμφιβάλλεις, κλείσε το μήνυμα και άνοιξε την επίσημη εφαρμογή.',
@@ -31,8 +30,7 @@ const LEVEL_CONFIG = {
     border: 'border-amber-300',
     iconColor: 'text-amber-500',
     labelColor: 'text-amber-800',
-    recommendation:
-      'Έλεγξε το μήνυμα από την επίσημη εφαρμογή ή το επίσημο site πριν κάνεις οτιδήποτε.',
+    recommendation: 'Έλεγξε το μήνυμα από την επίσημη εφαρμογή ή το επίσημο site πριν κάνεις οτιδήποτε.',
     actions: [
       'Μην πατήσεις links μέσα στο μήνυμα.',
       'Μπες στο επίσημο site ή την εφαρμογή απευθείας.',
@@ -57,33 +55,40 @@ const LEVEL_CONFIG = {
 }
 
 export default function ResultCard({ result, onReset }: Props) {
-  const [copied, setCopied] = useState(false)
+  const [shared, setShared] = useState(false)
 
   const config = LEVEL_CONFIG[result.riskLevel]
   const Icon = config.icon
 
-  function buildCopyText(): string {
+  function buildShareText(): string {
     const lines = [
-      `Αποτέλεσμα: ${config.label}`,
-      `Σκορ: ${result.totalScore}/100`,
+      `Αποτέλεσμα: ${config.label} (${result.totalScore}/100)`,
       '',
       `Σύσταση: ${config.recommendation}`,
     ]
     if (result.signals.length > 0) {
-      lines.push('', 'Σήματα κινδύνου:')
-      result.signals.forEach((s) => lines.push(`• ${s.label}`))
-    }
-    if (result.detectedDomains.length > 0) {
-      lines.push('', `Domains: ${result.detectedDomains.join(', ')}`)
+      lines.push('', 'Τι εντοπίστηκε:')
+      result.signals.forEach((s) => {
+        lines.push(`• ${s.label}${s.detail ? ` — ${s.detail}` : ''}`)
+      })
     }
     lines.push('', 'Ελέγχθηκε με την εφαρμογή "Πριν Πατήσεις"')
     return lines.join('\n')
   }
 
-  async function handleCopy() {
-    await navigator.clipboard.writeText(buildCopyText())
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  async function handleShare() {
+    const text = buildShareText()
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({ title: 'Πριν Πατήσεις — Αποτέλεσμα', text })
+      } catch {
+        // user cancelled — no-op
+      }
+    } else {
+      await navigator.clipboard.writeText(text)
+      setShared(true)
+      setTimeout(() => setShared(false), 2000)
+    }
   }
 
   return (
@@ -108,11 +113,16 @@ export default function ResultCard({ result, onReset }: Props) {
           <div className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">
             Τι εντοπίστηκε
           </div>
-          <ul className="flex flex-col gap-1">
+          <ul className="flex flex-col gap-2">
             {result.signals.map((s, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                <span className="mt-0.5 text-gray-400">•</span>
-                {s.label}
+              <li key={i} className="flex flex-col gap-0.5">
+                <div className="flex items-start gap-2 text-sm text-gray-700">
+                  <span className="mt-0.5 text-gray-400 shrink-0">•</span>
+                  <span>{s.label}</span>
+                </div>
+                {s.detail && (
+                  <div className="ml-4 text-xs text-gray-400 font-mono break-all">{s.detail}</div>
+                )}
               </li>
             ))}
           </ul>
@@ -143,7 +153,7 @@ export default function ResultCard({ result, onReset }: Props) {
         <ul className="flex flex-col gap-1">
           {config.actions.map((a, i) => (
             <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-              <span className="font-bold text-gray-400">{i + 1}.</span>
+              <span className="font-bold text-gray-400 shrink-0">{i + 1}.</span>
               {a}
             </li>
           ))}
@@ -165,11 +175,11 @@ export default function ResultCard({ result, onReset }: Props) {
           Νέος έλεγχος
         </button>
         <button
-          onClick={handleCopy}
+          onClick={handleShare}
           className="flex-1 flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 rounded-xl transition-colors"
         >
-          {copied ? <Check size={18} className="text-green-600" /> : <Copy size={18} />}
-          {copied ? 'Αντιγράφηκε' : 'Αντιγραφή'}
+          {shared ? <Check size={18} className="text-green-600" /> : <Share2 size={18} />}
+          {shared ? 'Αντιγράφηκε' : 'Μοιράσου'}
         </button>
       </div>
     </div>
