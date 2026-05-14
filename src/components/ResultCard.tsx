@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { ScamResult } from '@/types/scam'
-import { RotateCcw, Share2, Check, AlertTriangle, ShieldAlert, ShieldCheck } from 'lucide-react'
+import { RotateCcw, Share2, Check, AlertTriangle, ShieldAlert, ShieldCheck, Loader2 } from 'lucide-react'
+import { buildShareImage } from '@/lib/shareImage'
 
 interface Props {
   result: ScamResult
@@ -62,6 +63,7 @@ const LEVEL_CONFIG = {
 
 export default function ResultCard({ result, onReset }: Props) {
   const [shared, setShared] = useState(false)
+  const [sharing, setSharing] = useState(false)
 
   const cfg = LEVEL_CONFIG[result.riskLevel]
   const Icon = cfg.icon
@@ -83,15 +85,32 @@ export default function ResultCard({ result, onReset }: Props) {
   }
 
   async function handleShare() {
-    const text = buildShareText()
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share({ title: 'Πριν Πατήσεις — Αποτέλεσμα', text })
-      } catch { /* user cancelled */ }
-    } else {
-      await navigator.clipboard.writeText(text)
+    setSharing(true)
+    try {
+      // Try sharing as image first (best experience on mobile)
+      if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare) {
+        try {
+          const blob = await buildShareImage(result, cfg.label, cfg.recommendation)
+          const file = new File([blob], 'prin-patiseis-apotelasma.png', { type: 'image/png' })
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({ title: 'Πριν Πατήσεις — Αποτέλεσμα', files: [file] })
+            return
+          }
+        } catch { /* fall through to text share */ }
+
+        // Text share fallback
+        try {
+          await navigator.share({ title: 'Πριν Πατήσεις — Αποτέλεσμα', text: buildShareText() })
+          return
+        } catch { /* user cancelled or not supported */ }
+      }
+
+      // Clipboard fallback
+      await navigator.clipboard.writeText(buildShareText())
       setShared(true)
       setTimeout(() => setShared(false), 2000)
+    } finally {
+      setSharing(false)
     }
   }
 
@@ -197,10 +216,11 @@ export default function ResultCard({ result, onReset }: Props) {
           </button>
           <button
             onClick={handleShare}
-            className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold py-4 rounded-2xl transition-colors text-base shadow-md shadow-blue-200"
+            disabled={sharing}
+            className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-blue-400 text-white font-semibold py-4 rounded-2xl transition-colors text-base shadow-md shadow-blue-200"
           >
-            {shared ? <Check size={18} /> : <Share2 size={18} />}
-            {shared ? 'Αντιγράφηκε' : 'Μοιράσου'}
+            {sharing ? <Loader2 size={18} className="animate-spin" /> : shared ? <Check size={18} /> : <Share2 size={18} />}
+            {sharing ? 'Δημιουργία…' : shared ? 'Αντιγράφηκε' : 'Μοιράσου'}
           </button>
         </div>
       </div>

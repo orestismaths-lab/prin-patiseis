@@ -7,7 +7,8 @@ import { runOcr } from '@/lib/ocr'
 import { analyzeText } from '@/lib/scamEngine'
 import { loadConfig } from '@/lib/configLoader'
 import { ScamResult } from '@/types/scam'
-import { ShieldCheck, PenLine } from 'lucide-react'
+import { ShieldCheck, PenLine, Smartphone } from 'lucide-react'
+import Link from 'next/link'
 
 type Stage = 'idle' | 'ocr' | 'manual' | 'done' | 'error'
 
@@ -109,6 +110,14 @@ export default function Home() {
                 Δεν διαβάζουμε τα SMS σου. Ελέγχεις μόνο την εικόνα που επιλέγεις.
               </p>
             </div>
+
+            <Link
+              href="/shortcut"
+              className="flex items-center justify-center gap-2 text-gray-400 hover:text-blue-600 font-medium text-sm transition-colors py-1"
+            >
+              <Smartphone size={16} />
+              Οδηγίες για iPhone Shortcut
+            </Link>
           </div>
         )}
 
