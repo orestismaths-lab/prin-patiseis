@@ -98,19 +98,21 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     totalScore += score
   }
 
-  // 6. Reward / prize / refund bait
+  // 6. Reward / prize / refund / benefit bait
   const rewardCount = countMatches(text, greek.rewardWords)
   if (rewardCount > 0) {
     const score = Math.min(rewardCount * 10, 25)
-    signals.push({ label: 'Υπόσχεση δώρου, βραβείου ή επιστροφής χρημάτων', score })
+    signals.push({ label: 'Υπόσχεση δώρου, επιδόματος ή επιστροφής χρημάτων', score })
     totalScore += score
   }
 
   // 7. Brand impersonation — per-brand check against that brand's own domains
+  // Higher score when an unknown domain is also present (phishing combo)
   for (const brand of greek.brands) {
     if (containsAny(text, brand.keywords) && !brandDomainPresent(domains, brand.domains)) {
-      signals.push({ label: `Πιθανή παρουσίαση ως ${brand.name}`, score: 15 })
-      totalScore += 15
+      const score = unknownDomains.length > 0 ? 35 : 15
+      signals.push({ label: `Πιθανή παρουσίαση ως ${brand.name}`, score })
+      totalScore += score
     }
   }
 
@@ -166,8 +168,43 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
         detail: `"${domain}" μοιάζει με γνωστό domain (${hit})`,
       })
       totalScore += 25
-      break // one signal is enough even if multiple domains match
+      break
     }
+  }
+
+  // 13. Remote access / tech support scam
+  const remoteToolWords = ['anydesk', 'teamviewer', 'απομακρυσμενη προσβαση', 'απομακρυσμενο', 'remote access', 'remote desktop', 'απομακρυσμενος ελεγχος']
+  if (containsAny(text, remoteToolWords)) {
+    signals.push({ label: 'Ζητά απομακρυσμένη πρόσβαση στη συσκευή σου', score: 50 })
+    totalScore += 50
+  }
+
+  // 14. Family emergency scam (new number + send money)
+  const familyWords = ['μαμα', 'μπαμπα', 'μαμά', 'μπαμπά', 'γονεας', 'γονεις', 'αδελφε', 'αδελφη']
+  const newNumberWords = ['νεος αριθμος', 'νεο νουμερο', 'αλλαξα αριθμο', 'νεο τηλεφωνο', 'new number', 'αλλαξα κινητο']
+  const sendMoneyWords = ['στειλε', 'στείλε', 'μεταφορα χρηματων', 'εμβασμα', 'χρηματα τωρα', 'χρηματα αμεσα']
+  if (containsAny(text, familyWords) && (containsAny(text, newNumberWords) || containsAny(text, sendMoneyWords))) {
+    const alsoMoney = containsAny(text, ['€', 'ευρω', 'χρηματα', 'εμβασμα', 'μεταφορα'])
+    const score = alsoMoney ? 55 : 30
+    signals.push({ label: 'Απάτη «οικογενειακής έκτακτης ανάγκης»', score })
+    totalScore += score
+  }
+
+  // 15. Fake transaction alert with cancel link
+  const txAlertWords = ['εγκριθηκε', 'εγκρίθηκε', 'χρεωθηκε', 'χρεώθηκε', 'πραγματοποιηθηκε', 'authorized purchase', 'εγκεκριμενη αγορα']
+  const cancelLinkWords = ['ακυρωστε', 'ακυρώστε', 'ακυρωσ', 'δεν αναγνωριζετε', 'δεν εκανατε', 'δεν κανατε', 'cancel', 'δεν ειναι δικη σας']
+  if (containsAny(text, txAlertWords) && containsAny(text, cancelLinkWords) && messageHasLink) {
+    signals.push({ label: 'Ψεύτικη ειδοποίηση συναλλαγής με σύνδεσμο «ακύρωσης»', score: 40 })
+    totalScore += 40
+  }
+
+  // 16. Investment / high-return scam
+  const investWords = ['εγγυημενη αποδοση', 'εγγυημενες αποδοσεις', 'επενδυστε', 'bitcoin', 'κρυπτονομισμ', 'forex', 'trading platform']
+  const investCount = countMatches(text, investWords)
+  if (investCount >= 1 && containsAny(text, ['%', 'αποδοση', 'κερδος', 'κερδη'])) {
+    const score = investCount >= 2 ? 55 : 35
+    signals.push({ label: 'Ύποπτη επενδυτική προσφορά / απάτη υψηλών αποδόσεων', score })
+    totalScore += score
   }
 
   // ── Hard rule: link + credential request = always dangerous ───────────────
@@ -177,6 +214,13 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     if (!signals.some((s) => s.label.includes('σύνδεσμος'))) {
       signals.push({ label: 'Σύνδεσμος + ζήτηση ευαίσθητων στοιχείων', score: 70 })
     }
+  }
+
+  // ── Hard rule: brand impersonation + unknown domain + payment/urgency/reward ──
+  const hasBrandImpersonation = signals.some((s) => s.label.includes('παρουσίαση ως'))
+  const hasPaymentOrUrgency = containsAny(text, [...greek.paymentWords, ...greek.urgencyWords, ...greek.rewardWords])
+  if (hasBrandImpersonation && unknownDomains.length > 0 && hasPaymentOrUrgency) {
+    totalScore = Math.max(totalScore, 70)
   }
 
   totalScore = Math.min(totalScore, 100)
