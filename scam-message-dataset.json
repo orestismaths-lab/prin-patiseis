@@ -1,0 +1,1249 @@
+{
+  "name": "Scam message dataset for Πριν Πατήσεις",
+  "version": "0.1",
+  "language": [
+    "el",
+    "en",
+    "greeklish"
+  ],
+  "safetyNote": "All URLs are defanged with hxxps:// and [.]invalid. They are synthetic examples based on real scam patterns. Do not convert them into active links.",
+  "usage": "Use these examples as test cases and rule-discovery input for a defensive scam-detection engine.",
+  "totalCases": 68,
+  "cases": [
+    {
+      "id": "SCAM-GR-GOV-001",
+      "category": "public_service_traffic_fine",
+      "channel": "sms_or_chat_or_email",
+      "message": "GovPay: Εκκρεμεί απλήρωτη κλήση τροχαίας. Πληρώστε σήμερα για να αποφύγετε πρόστιμο: hxxps://gov-pay-fine[.]invalid/pay",
+      "links": [
+        "hxxps://gov-pay-fine[.]invalid/pay"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "public_service_impersonation",
+        "traffic_fine",
+        "payment_request",
+        "urgency",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "public service + payment link",
+        "gov-like domain not gov.gr"
+      ]
+    },
+    {
+      "id": "SCAM-GR-GOV-002",
+      "category": "public_service_traffic_fine",
+      "channel": "sms_or_chat_or_email",
+      "message": "Υπ. Μεταφορών: Έχετε ανεξόφλητη παράβαση. Τακτοποιήστε την οφειλή σας εντός 24 ωρών: hxxps://govgr-paravasi[.]invalid",
+      "links": [
+        "hxxps://govgr-paravasi[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "public_service_impersonation",
+        "payment_request",
+        "urgency",
+        "fear_penalty",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "εντός 24 ωρών + οφειλή + gov-like domain"
+      ]
+    },
+    {
+      "id": "SCAM-GR-GOV-003",
+      "category": "public_service_traffic_fine",
+      "channel": "sms_or_chat_or_email",
+      "message": "Η άδεια οδήγησής σας θα περιοριστεί λόγω απλήρωτου προστίμου. Πληρωμή: hxxps://drivers-license-gov[.]invalid",
+      "links": [
+        "hxxps://drivers-license-gov[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "fear",
+        "traffic_fine",
+        "payment_link"
+      ],
+      "engineHints": [
+        "άδεια οδήγησης + πρόστιμο + payment link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-AADE-001",
+      "category": "tax_refund",
+      "channel": "sms_or_chat_or_email",
+      "message": "ΑΑΔΕ: Δικαιούστε επιστροφή φόρου 214,80€. Επιβεβαιώστε τον λογαριασμό σας: hxxps://aade-refund-gov[.]invalid",
+      "links": [
+        "hxxps://aade-refund-gov[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "aade_impersonation",
+        "refund",
+        "bank_account_request",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "AADE + επιστροφή φόρου + link not official"
+      ]
+    },
+    {
+      "id": "SCAM-GR-AADE-002",
+      "category": "tax_refund",
+      "channel": "sms_or_chat_or_email",
+      "message": "myAADE: Η αίτηση επιδότησης εγκρίθηκε. Συνδεθείτε για να λάβετε τα χρήματα: hxxps://myaade-grant[.]invalid/login",
+      "links": [
+        "hxxps://myaade-grant[.]invalid/login"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "aade_impersonation",
+        "subsidy",
+        "login_request",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "επιδότηση + λάβετε χρήματα + login"
+      ]
+    },
+    {
+      "id": "SCAM-GR-AADE-003",
+      "category": "tax_refund",
+      "channel": "sms_or_chat_or_email",
+      "message": "Φορολογική ενημέρωση: συμπληρώστε IBAN και στοιχεία πρόσβασης για την επιστροφή σας: hxxps://tax-return-verify[.]invalid",
+      "links": [
+        "hxxps://tax-return-verify[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "tax_refund",
+        "iban_request",
+        "credentials_request",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "IBAN + credentials + refund"
+      ]
+    },
+    {
+      "id": "SCAM-GR-AADE-004",
+      "category": "tax_debt",
+      "channel": "sms_or_chat_or_email",
+      "message": "ΑΑΔΕ: Εκκρεμεί οφειλή που θα σταλεί για είσπραξη. Πληρώστε άμεσα εδώ: hxxps://aade-ofeiles[.]invalid/pay",
+      "links": [
+        "hxxps://aade-ofeiles[.]invalid/pay"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "aade_impersonation",
+        "debt_collection",
+        "urgency",
+        "payment_request"
+      ],
+      "engineHints": [
+        "ΑΑΔΕ + οφειλή + fake payment link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-EOPYY-001",
+      "category": "health_refund",
+      "channel": "sms_or_chat_or_email",
+      "message": "ΕΟΠΥΥ: Εγκρίθηκε επιστροφή χρημάτων. Ενημερώστε τα τραπεζικά σας στοιχεία εδώ: hxxps://eopyy-refund[.]invalid",
+      "links": [
+        "hxxps://eopyy-refund[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "eopyy_impersonation",
+        "refund",
+        "bank_details_request",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "EOPYY + refund + bank details"
+      ]
+    },
+    {
+      "id": "SCAM-GR-EOPYY-002",
+      "category": "health_refund",
+      "channel": "sms_or_chat_or_email",
+      "message": "ΕΟΠΥΥ: Για να λάβετε αποζημίωση φαρμάκων, επιβεβαιώστε κάρτα πληρωμής: hxxps://eopyy-payback[.]invalid/card",
+      "links": [
+        "hxxps://eopyy-payback[.]invalid/card"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "eopyy_impersonation",
+        "card_details_request",
+        "refund"
+      ],
+      "engineHints": [
+        "card details + refund"
+      ]
+    },
+    {
+      "id": "SCAM-GR-EFKA-001",
+      "category": "social_security",
+      "channel": "sms_or_chat_or_email",
+      "message": "e-ΕΦΚΑ: Η κάρτα σας έληξε. Επιβεβαιώστε στοιχεία τραπεζικού λογαριασμού στον σύνδεσμο: hxxps://efka-card-update[.]invalid",
+      "links": [
+        "hxxps://efka-card-update[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "efka_impersonation",
+        "expired_card",
+        "bank_details_request"
+      ],
+      "engineHints": [
+        "EFKA + bank details"
+      ]
+    },
+    {
+      "id": "SCAM-GR-EFKA-002",
+      "category": "social_security",
+      "channel": "sms_or_chat_or_email",
+      "message": "ΕΦΚΑ: Εκκρεμεί πληρωμή σύνταξης. Συνδεθείτε με τους κωδικούς σας για επιβεβαίωση: hxxps://efka-login-secure[.]invalid",
+      "links": [
+        "hxxps://efka-login-secure[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "efka_impersonation",
+        "pension",
+        "login_request"
+      ],
+      "engineHints": [
+        "σύνταξη + κωδικοί + fake login"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BENEFIT-001",
+      "category": "government_benefit",
+      "channel": "sms_or_chat_or_email",
+      "message": "Fuel Pass: Εγκρίθηκε επίδομα 120€. Δηλώστε IBAN για καταβολή: hxxps://fuelpass-claim[.]invalid",
+      "links": [
+        "hxxps://fuelpass-claim[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "benefit_impersonation",
+        "iban_request",
+        "reward"
+      ],
+      "engineHints": [
+        "benefit + IBAN + link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BENEFIT-002",
+      "category": "government_benefit",
+      "channel": "sms_or_chat_or_email",
+      "message": "Power Pass: Υπάρχει διαθέσιμη επιστροφή. Πατήστε άμεσα για ενεργοποίηση: hxxps://powerpass-gov-refund[.]invalid",
+      "links": [
+        "hxxps://powerpass-gov-refund[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "benefit_impersonation",
+        "refund",
+        "urgency"
+      ],
+      "engineHints": [
+        "refund + urgency + gov-like domain"
+      ]
+    },
+    {
+      "id": "SCAM-GR-MUNICIPAL-001",
+      "category": "municipality_fee",
+      "channel": "sms_or_chat_or_email",
+      "message": "Δήμος: Εκκρεμεί τέλος στάθμευσης. Πληρώστε πριν τη βεβαίωση προστίμου: hxxps://dimos-parking-pay[.]invalid",
+      "links": [
+        "hxxps://dimos-parking-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "municipality_impersonation",
+        "parking_fee",
+        "fine_threat",
+        "payment_link"
+      ],
+      "engineHints": [
+        "Δήμος + στάθμευση + πρόστιμο"
+      ]
+    },
+    {
+      "id": "SCAM-GR-DELIVERY-001",
+      "category": "fake_package_delivery",
+      "channel": "sms_or_chat_or_email",
+      "message": "ΕΛΤΑ: Το δέμα σας κρατήθηκε λόγω ανεξόφλητων τελών 1,99€. Πληρώστε εδώ: hxxps://elta-delivery-pay[.]invalid",
+      "links": [
+        "hxxps://elta-delivery-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "elta_impersonation",
+        "small_fee",
+        "payment_request",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "ELTA + small fee + fake domain"
+      ]
+    },
+    {
+      "id": "SCAM-GR-DELIVERY-002",
+      "category": "fake_package_delivery",
+      "channel": "sms_or_chat_or_email",
+      "message": "ΕΛΤΑ: Προσπαθήσαμε να παραδώσουμε το πακέτο σας, αλλά απαιτούνταν υπογραφή. Επιβεβαιώστε διεύθυνση: hxxps://elta-address-update[.]invalid",
+      "links": [
+        "hxxps://elta-address-update[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "elta_impersonation",
+        "failed_delivery",
+        "address_request"
+      ],
+      "engineHints": [
+        "delivery + address update + link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-DELIVERY-003",
+      "category": "fake_package_delivery",
+      "channel": "sms_or_chat_or_email",
+      "message": "Το πακέτο σας επιστρέφεται σήμερα. Απαντήστε ΝΑΙ και ανοίξτε ξανά το link: hxxps://post-elta-track[.]invalid",
+      "links": [
+        "hxxps://post-elta-track[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "failed_delivery",
+        "reply_instruction",
+        "urgency"
+      ],
+      "engineHints": [
+        "reply YES + link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-DELIVERY-004",
+      "category": "fake_package_delivery",
+      "channel": "sms_or_chat_or_email",
+      "message": "Courier: Δεν ήταν δυνατή η παράδοση. Πληρώστε 2,49€ για επαναπρογραμματισμό: hxxps://delivery-fee[.]invalid",
+      "links": [
+        "hxxps://delivery-fee[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "generic_courier",
+        "small_fee",
+        "payment_request"
+      ],
+      "engineHints": [
+        "small delivery fee"
+      ]
+    },
+    {
+      "id": "SCAM-GR-DELIVERY-005",
+      "category": "fake_package_delivery",
+      "channel": "sms_or_chat_or_email",
+      "message": "Η διεύθυνση αποστολής είναι ελλιπής. Συμπληρώστε τα στοιχεία σας εντός 12 ωρών: hxxps://parcel-update[.]invalid",
+      "links": [
+        "hxxps://parcel-update[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "address_update",
+        "urgency",
+        "personal_data_request"
+      ],
+      "engineHints": [
+        "address update + urgency"
+      ]
+    },
+    {
+      "id": "SCAM-GR-DELIVERY-006",
+      "category": "fake_customs_fee",
+      "channel": "sms_or_chat_or_email",
+      "message": "Τελωνείο: Το δέμα σας έχει επιπλέον χρέωση 3,75€. Πληρωμή για αποδέσμευση: hxxps://customs-release[.]invalid",
+      "links": [
+        "hxxps://customs-release[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "customs_fee",
+        "package_delivery",
+        "payment_request"
+      ],
+      "engineHints": [
+        "τελωνείο + δέμα + μικρή πληρωμή"
+      ]
+    },
+    {
+      "id": "SCAM-EN-DELIVERY-007",
+      "category": "fake_package_delivery",
+      "channel": "sms_or_chat_or_email",
+      "message": "UPS/USPS: Your parcel is pending due to unpaid customs fee. Pay now: hxxps://parcel-customs-pay[.]invalid",
+      "links": [
+        "hxxps://parcel-customs-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "package_delivery",
+        "customs_fee",
+        "payment_request",
+        "urgency"
+      ],
+      "engineHints": [
+        "English parcel scam"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-001",
+      "category": "bank_blocked_card",
+      "channel": "sms_or_chat_or_email",
+      "message": "Η κάρτα σας έχει μπλοκαριστεί. Επιβεβαιώστε τα στοιχεία σας εδώ: hxxps://eurobank-secure-login[.]invalid",
+      "links": [
+        "hxxps://eurobank-secure-login[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "bank_impersonation",
+        "blocked_card",
+        "login_request",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "bank + blocked + login"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-002",
+      "category": "bank_suspicious_activity",
+      "channel": "sms_or_chat_or_email",
+      "message": "Alpha Bank: Παρατηρήθηκε ύποπτη δραστηριότητα. Ξεκλειδώστε άμεσα το e-Banking: hxxps://alpha-unlock[.]invalid",
+      "links": [
+        "hxxps://alpha-unlock[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "bank_impersonation",
+        "suspicious_activity",
+        "urgency",
+        "fake_login"
+      ],
+      "engineHints": [
+        "suspicious activity + unlock"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-003",
+      "category": "bank_disabled_account",
+      "channel": "sms_or_chat_or_email",
+      "message": "NBG: Ο λογαριασμός σας απενεργοποιήθηκε προσωρινά. Ενεργοποίηση: hxxps://nbg-restore-access[.]invalid",
+      "links": [
+        "hxxps://nbg-restore-access[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "bank_impersonation",
+        "account_disabled",
+        "restore_access"
+      ],
+      "engineHints": [
+        "account disabled + restore access"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-004",
+      "category": "bank_otp",
+      "channel": "sms_or_chat_or_email",
+      "message": "Για ακύρωση συναλλαγής εισάγετε τον OTP που λάβατε εδώ: hxxps://cancel-transfer-bank[.]invalid",
+      "links": [
+        "hxxps://cancel-transfer-bank[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "otp_request",
+        "transaction_cancel",
+        "suspicious_domain"
+      ],
+      "engineHints": [
+        "OTP + link hard rule"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-005",
+      "category": "bank_card_verification",
+      "channel": "sms_or_chat_or_email",
+      "message": "Πειραιώς: Επιβεβαιώστε αριθμό κάρτας, CVV και PIN για αποφυγή προσωρινού κλειδώματος: hxxps://piraeus-cardcheck[.]invalid",
+      "links": [
+        "hxxps://piraeus-cardcheck[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "bank_impersonation",
+        "card_details_request",
+        "cvv",
+        "pin",
+        "fear"
+      ],
+      "engineHints": [
+        "CVV/PIN/card + link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-006",
+      "category": "bank_fraud_alert",
+      "channel": "sms_or_chat_or_email",
+      "message": "Αγορά 489,00€ μόλις εγκρίθηκε. Αν δεν είστε εσείς, πατήστε για ακύρωση: hxxps://secure-bank-dispute[.]invalid",
+      "links": [
+        "hxxps://secure-bank-dispute[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "fake_fraud_alert",
+        "large_transaction",
+        "urgency"
+      ],
+      "engineHints": [
+        "fake fraud alert + cancel link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-007",
+      "category": "bank_update_data",
+      "channel": "sms_or_chat_or_email",
+      "message": "Απαιτείται ενημέρωση στοιχείων πελάτη. Συνδεθείτε για να μην περιοριστεί ο λογαριασμός σας: hxxps://bank-kyc-update[.]invalid",
+      "links": [
+        "hxxps://bank-kyc-update[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "kyc_update",
+        "login_request",
+        "fear"
+      ],
+      "engineHints": [
+        "KYC + restriction + link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-008",
+      "category": "mobile_banking",
+      "channel": "sms_or_chat_or_email",
+      "message": "Η πρόσβαση στο mobile banking σας θα λήξει. Ανανεώστε τους κωδικούς σας: hxxps://mobilebanking-renew[.]invalid",
+      "links": [
+        "hxxps://mobilebanking-renew[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "mobile_banking",
+        "password_request",
+        "fear"
+      ],
+      "engineHints": [
+        "mobile banking + password"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-009",
+      "category": "bank_security_verification",
+      "channel": "sms_or_chat_or_email",
+      "message": "Security Alert: Για λόγους ασφαλείας επαληθεύστε Username και Password: hxxps://account-safe-verify[.]invalid",
+      "links": [
+        "hxxps://account-safe-verify[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "credentials_request",
+        "security_alert"
+      ],
+      "engineHints": [
+        "username/password + link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-BANK-010",
+      "category": "card_device_alert",
+      "channel": "sms_or_chat_or_email",
+      "message": "Νέα συσκευή προστέθηκε στην κάρτα σας. Αν δεν ήσασταν εσείς, ακυρώστε εδώ: hxxps://card-device-cancel[.]invalid",
+      "links": [
+        "hxxps://card-device-cancel[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "fake_security_alert",
+        "new_device",
+        "urgency"
+      ],
+      "engineHints": [
+        "new device + cancel link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-TELCO-001",
+      "category": "telecom_bill",
+      "channel": "sms_or_chat_or_email",
+      "message": "COSMOTE: Εκκρεμεί ανεξόφλητος λογαριασμός. Πληρώστε εντός 24 ωρών για να αποφύγετε φραγή: hxxps://cosmote-bill-pay[.]invalid",
+      "links": [
+        "hxxps://cosmote-bill-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "telco_impersonation",
+        "bill_payment",
+        "urgency",
+        "service_cutoff"
+      ],
+      "engineHints": [
+        "telco bill + cutoff threat"
+      ]
+    },
+    {
+      "id": "SCAM-GR-TELCO-002",
+      "category": "telecom_reward",
+      "channel": "sms_or_chat_or_email",
+      "message": "Κερδίσατε δωρεάν GB για 12 μήνες. Επιβεβαιώστε αριθμό και κάρτα: hxxps://free-gb-claim[.]invalid",
+      "links": [
+        "hxxps://free-gb-claim[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "telco_reward",
+        "free_gift",
+        "card_details_request"
+      ],
+      "engineHints": [
+        "free reward + card"
+      ]
+    },
+    {
+      "id": "SCAM-GR-TELCO-003",
+      "category": "sim_swap",
+      "channel": "sms_or_chat_or_email",
+      "message": "Αίτημα αντικατάστασης SIM βρίσκεται σε εξέλιξη. Αν δεν το ζητήσατε, επιβεβαιώστε στοιχεία: hxxps://sim-secure-check[.]invalid",
+      "links": [
+        "hxxps://sim-secure-check[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "sim_swap",
+        "security_alert",
+        "verification_request"
+      ],
+      "engineHints": [
+        "SIM replacement + verify details"
+      ]
+    },
+    {
+      "id": "SCAM-GR-UTILITY-001",
+      "category": "electricity_bill",
+      "channel": "sms_or_chat_or_email",
+      "message": "ΔΕΗ: Ο λογαριασμός σας λήγει σήμερα. Πληρώστε τώρα για να μη γίνει διακοπή: hxxps://dei-pay-now[.]invalid",
+      "links": [
+        "hxxps://dei-pay-now[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "dei_impersonation",
+        "bill_payment",
+        "urgency",
+        "service_cutoff"
+      ],
+      "engineHints": [
+        "DEI + cutoff + link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-UTILITY-002",
+      "category": "electricity_refund",
+      "channel": "sms_or_chat_or_email",
+      "message": "Επιστροφή ρεύματος: Δικαιούστε 73,40€. Δηλώστε IBAN για κατάθεση: hxxps://energy-refund[.]invalid",
+      "links": [
+        "hxxps://energy-refund[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "utility_refund",
+        "iban_request",
+        "reward"
+      ],
+      "engineHints": [
+        "energy refund + IBAN"
+      ]
+    },
+    {
+      "id": "SCAM-GR-MARKET-001",
+      "category": "marketplace_fake_buyer",
+      "channel": "sms_or_chat_or_email",
+      "message": "Ενδιαφέρομαι για την αγγελία. Θα πληρώσω άμεσα μέσω ασφαλούς υπηρεσίας. Άνοιξε το link και βάλε κάρτα για να λάβεις τα χρήματα: hxxps://safe-buyer-pay[.]invalid",
+      "links": [
+        "hxxps://safe-buyer-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "marketplace",
+        "fake_buyer",
+        "card_details_request"
+      ],
+      "engineHints": [
+        "receive money + card details"
+      ]
+    },
+    {
+      "id": "SCAM-GR-MARKET-002",
+      "category": "marketplace_fake_buyer",
+      "channel": "sms_or_chat_or_email",
+      "message": "Έκανα κατάθεση. Για να εμφανιστούν τα χρήματα μπείτε στο link και βάλτε τον OTP: hxxps://secure-payment-release[.]invalid",
+      "links": [
+        "hxxps://secure-payment-release[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "fake_payment",
+        "otp_request"
+      ],
+      "engineHints": [
+        "payment release + OTP"
+      ]
+    },
+    {
+      "id": "SCAM-GR-MARKET-003",
+      "category": "marketplace_fake_buyer",
+      "channel": "sms_or_chat_or_email",
+      "message": "Η μεταφορική χρειάζεται στοιχεία e-Banking για να σας καταθέσει τα χρήματα. Συμπληρώστε εδώ: hxxps://courier-buyer-pay[.]invalid",
+      "links": [
+        "hxxps://courier-buyer-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "fake_courier_payment",
+        "ebanking_credentials_request"
+      ],
+      "engineHints": [
+        "courier + e-banking credentials"
+      ]
+    },
+    {
+      "id": "SCAM-GR-MARKET-004",
+      "category": "fake_receipt",
+      "channel": "sms_or_chat_or_email",
+      "message": "Σας έστειλα απόδειξη κατάθεσης. Πατήστε επιβεβαίωση για να ολοκληρωθεί: hxxps://bank-transfer-confirm[.]invalid",
+      "links": [
+        "hxxps://bank-transfer-confirm[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "fake_receipt",
+        "payment_confirmation_link"
+      ],
+      "engineHints": [
+        "fake receipt + confirmation link"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-RETAIL-001",
+      "category": "free_gift",
+      "channel": "sms_or_chat_or_email",
+      "message": "Συγχαρητήρια! Κερδίσατε δωρεάν κινητό. Πληρώστε μόνο έξοδα αποστολής: hxxps://gift-claim[.]invalid",
+      "links": [
+        "hxxps://gift-claim[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "free_gift",
+        "shipping_fee"
+      ],
+      "engineHints": [
+        "gift + shipping fee"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-RETAIL-002",
+      "category": "bogus_retail_alert",
+      "channel": "sms_or_chat_or_email",
+      "message": "Amazon Security: Αγορά 999€ σε εξέλιξη. Αν δεν είστε εσείς, ακυρώστε εδώ: hxxps://amazon-security-cancel[.]invalid",
+      "links": [
+        "hxxps://amazon-security-cancel[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "retailer_impersonation",
+        "fake_fraud_alert"
+      ],
+      "engineHints": [
+        "large purchase + cancel link"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-SUB-001",
+      "category": "subscription_payment_failed",
+      "channel": "sms_or_chat_or_email",
+      "message": "Netflix: Η πληρωμή σας απέτυχε. Ενημερώστε κάρτα για να μη διακοπεί η υπηρεσία: hxxps://netflix-billing-update[.]invalid",
+      "links": [
+        "hxxps://netflix-billing-update[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "subscription_impersonation",
+        "card_update",
+        "fear_service_disruption"
+      ],
+      "engineHints": [
+        "billing failed + card update"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-SUB-002",
+      "category": "subscription_payment_failed",
+      "channel": "sms_or_chat_or_email",
+      "message": "Η συνδρομή σας λήγει σήμερα. Πατήστε για άμεση ανανέωση πληρωμής: hxxps://account-renew-pay[.]invalid",
+      "links": [
+        "hxxps://account-renew-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "subscription",
+        "urgency",
+        "payment_link"
+      ],
+      "engineHints": [
+        "subscription expires today"
+      ]
+    },
+    {
+      "id": "SCAM-GR-TECH-001",
+      "category": "tech_support",
+      "channel": "sms_or_chat_or_email",
+      "message": "Ο υπολογιστής σας έχει μολυνθεί. Κατεβάστε το εργαλείο υποστήριξης για απομακρυσμένο έλεγχο: hxxps://pc-support-fix[.]invalid",
+      "links": [
+        "hxxps://pc-support-fix[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "tech_support_scam",
+        "remote_access",
+        "malware_risk"
+      ],
+      "engineHints": [
+        "remote access/install tool"
+      ]
+    },
+    {
+      "id": "SCAM-GR-TECH-002",
+      "category": "tech_support",
+      "channel": "sms_or_chat_or_email",
+      "message": "Microsoft Support: Εντοπίστηκε ιός στη συσκευή σας. Κατεβάστε άμεσα το security tool: hxxps://microsoft-security-fix[.]invalid",
+      "links": [
+        "hxxps://microsoft-security-fix[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "tech_support_scam",
+        "virus_warning",
+        "install_tool"
+      ],
+      "engineHints": [
+        "Microsoft + virus + download"
+      ]
+    },
+    {
+      "id": "SCAM-GR-TECH-003",
+      "category": "remote_access",
+      "channel": "sms_or_chat_or_email",
+      "message": "Για να καθαρίσουμε τη συσκευή σας, εγκαταστήστε AnyDesk και στείλτε μας τον κωδικό πρόσβασης: hxxps://remote-helpdesk[.]invalid",
+      "links": [
+        "hxxps://remote-helpdesk[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "remote_access_app",
+        "access_code_request"
+      ],
+      "engineHints": [
+        "AnyDesk/TeamViewer + access code"
+      ]
+    },
+    {
+      "id": "SCAM-GR-JOB-001",
+      "category": "fake_job",
+      "channel": "sms_or_chat_or_email",
+      "message": "Εργασία από το σπίτι. Κερδίστε 80€ την ημέρα κάνοντας απλές εργασίες. Ξεκινήστε εδώ: hxxps://job-task-pay[.]invalid",
+      "links": [
+        "hxxps://job-task-pay[.]invalid"
+      ],
+      "expectedRisk": "suspicious",
+      "signals": [
+        "fake_job",
+        "easy_money"
+      ],
+      "engineHints": [
+        "job + easy money"
+      ]
+    },
+    {
+      "id": "SCAM-GR-JOB-002",
+      "category": "task_scam",
+      "channel": "sms_or_chat_or_email",
+      "message": "Ολοκληρώστε 5 tasks και κάντε μικρή κατάθεση για να ξεκλειδώσετε την προμήθειά σας: hxxps://task-commission[.]invalid",
+      "links": [
+        "hxxps://task-commission[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "task_scam",
+        "deposit_to_unlock",
+        "commission"
+      ],
+      "engineHints": [
+        "tasks + deposit + commission"
+      ]
+    },
+    {
+      "id": "SCAM-GR-JOB-003",
+      "category": "money_mule",
+      "channel": "sms_or_chat_or_email",
+      "message": "Χρειαζόμαστε συνεργάτες για μεταφορά χρημάτων. Κρατάτε 10% προμήθεια. Δήλωση ενδιαφέροντος: hxxps://transfer-agent-job[.]invalid",
+      "links": [
+        "hxxps://transfer-agent-job[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "money_mule",
+        "transfer_money",
+        "commission"
+      ],
+      "engineHints": [
+        "transfer money for commission"
+      ]
+    },
+    {
+      "id": "SCAM-GR-INVEST-001",
+      "category": "investment_crypto",
+      "channel": "sms_or_chat_or_email",
+      "message": "Επενδύστε 250€ σήμερα και λάβετε εγγυημένη απόδοση 1.500€ σε 7 ημέρες. Εγγραφή: hxxps://crypto-profit-now[.]invalid",
+      "links": [
+        "hxxps://crypto-profit-now[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "investment_scam",
+        "guaranteed_return",
+        "urgency"
+      ],
+      "engineHints": [
+        "guaranteed profit + crypto"
+      ]
+    },
+    {
+      "id": "SCAM-GR-INVEST-002",
+      "category": "investment_crypto",
+      "channel": "sms_or_chat_or_email",
+      "message": "Η πλατφόρμα έχει κλειδώσει τα κέρδη σας. Πληρώστε φόρο ανάληψης για να τα λάβετε: hxxps://withdrawal-tax[.]invalid",
+      "links": [
+        "hxxps://withdrawal-tax[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "investment_scam",
+        "withdrawal_fee",
+        "locked_funds"
+      ],
+      "engineHints": [
+        "withdrawal fee to release funds"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-TOLL-001",
+      "category": "unpaid_toll",
+      "channel": "sms_or_chat_or_email",
+      "message": "ePass: Υπάρχει ανεξόφλητο διόδιο 3,20€. Πληρώστε άμεσα για να αποφύγετε πρόστιμο: hxxps://toll-pay-now[.]invalid",
+      "links": [
+        "hxxps://toll-pay-now[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "unpaid_toll",
+        "small_fee",
+        "fine_threat",
+        "payment_link"
+      ],
+      "engineHints": [
+        "toll fee + fine threat"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-TOLL-002",
+      "category": "unpaid_toll",
+      "channel": "sms_or_chat_or_email",
+      "message": "Ανεξόφλητα τέλη διέλευσης. Η μη πληρωμή θα οδηγήσει σε πρόσθετες χρεώσεις: hxxps://road-fee-pay[.]invalid",
+      "links": [
+        "hxxps://road-fee-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "unpaid_toll",
+        "fear_extra_charge",
+        "payment_link"
+      ],
+      "engineHints": [
+        "road fee + extra charges"
+      ]
+    },
+    {
+      "id": "SCAM-GR-PARKING-001",
+      "category": "parking_fine",
+      "channel": "sms_or_chat_or_email",
+      "message": "ParkingPay: Πρόστιμο στάθμευσης 14,50€. Πληρώστε σήμερα για έκπτωση 50%: hxxps://parking-fine-discount[.]invalid",
+      "links": [
+        "hxxps://parking-fine-discount[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "parking_fine",
+        "discount_pressure",
+        "payment_link",
+        "urgency"
+      ],
+      "engineHints": [
+        "fine + discount pressure"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-WRONG-001",
+      "category": "wrong_number",
+      "channel": "sms_or_chat_or_email",
+      "message": "Γεια σου Μαρία, φτάνεις στο ραντεβού σήμερα; Συγγνώμη αν έστειλα σε λάθος αριθμό. Μπορείς να με βρεις εδώ: hxxps://chat-profile[.]invalid",
+      "links": [
+        "hxxps://chat-profile[.]invalid"
+      ],
+      "expectedRisk": "suspicious",
+      "signals": [
+        "wrong_number_opening",
+        "conversation_starter",
+        "external_link"
+      ],
+      "engineHints": [
+        "wrong number + external link"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-WRONG-002",
+      "category": "wrong_number_investment",
+      "channel": "sms_or_chat_or_email",
+      "message": "Χάρηκα που μιλήσαμε. Εγώ κερδίζω από μια επενδυτική πλατφόρμα, μπορώ να σου δείξω πώς: hxxps://private-invest-club[.]invalid",
+      "links": [
+        "hxxps://private-invest-club[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "wrong_number",
+        "investment_pivot"
+      ],
+      "engineHints": [
+        "wrong number + investment link"
+      ]
+    },
+    {
+      "id": "SCAM-GR-FAMILY-001",
+      "category": "family_emergency",
+      "channel": "sms_or_chat_or_email",
+      "message": "Μαμά, έσπασε το κινητό μου. Αυτός είναι ο νέος αριθμός. Χρειάζομαι άμεσα χρήματα για πληρωμή εδώ: hxxps://family-help-pay[.]invalid",
+      "links": [
+        "hxxps://family-help-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "family_impersonation",
+        "new_number",
+        "urgent_money_request"
+      ],
+      "engineHints": [
+        "μαμά/μπαμπά + new number + money"
+      ]
+    },
+    {
+      "id": "SCAM-GR-FAMILY-002",
+      "category": "family_emergency",
+      "channel": "sms_or_chat_or_email",
+      "message": "Μπαμπά είμαι σε ανάγκη, μην με πάρεις τηλέφωνο. Στείλε 450€ τώρα από εδώ: hxxps://urgent-family-transfer[.]invalid",
+      "links": [
+        "hxxps://urgent-family-transfer[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "family_impersonation",
+        "do_not_call",
+        "urgent_money_request"
+      ],
+      "engineHints": [
+        "do not call + send money now"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-GEN-001",
+      "category": "shortened_url",
+      "channel": "sms_or_chat_or_email",
+      "message": "Η ταυτοποίησή σας εκκρεμεί. Πατήστε εδώ για ολοκλήρωση: hxxps://bit[.]ly/verify-now",
+      "links": [
+        "hxxps://bit[.]ly/verify-now"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "verification_request",
+        "shortened_url",
+        "urgency"
+      ],
+      "engineHints": [
+        "shortened URL + verification"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-GEN-002",
+      "category": "credentials_request",
+      "channel": "sms_or_chat_or_email",
+      "message": "Ο λογαριασμός σας θα περιοριστεί. Επιβεβαιώστε username και password: hxxps://account-verify[.]invalid",
+      "links": [
+        "hxxps://account-verify[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "account_restriction",
+        "credentials_request"
+      ],
+      "engineHints": [
+        "username/password + link"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-GEN-003",
+      "category": "malware_install",
+      "channel": "sms_or_chat_or_email",
+      "message": "Για να δείτε το έγγραφο κατεβάστε την εφαρμογή προβολής από εδώ: hxxps://document-viewer-app[.]invalid/download",
+      "links": [
+        "hxxps://document-viewer-app[.]invalid/download"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "malware_install",
+        "download_app"
+      ],
+      "engineHints": [
+        "download app from unsolicited message"
+      ]
+    },
+    {
+      "id": "SCAM-GLOBAL-GEN-004",
+      "category": "email_quota",
+      "channel": "sms_or_chat_or_email",
+      "message": "Το mailbox σας θα απενεργοποιηθεί λόγω υπέρβασης ορίου. Συνδεθείτε για ανανέωση: hxxps://mail-quota-renew[.]invalid",
+      "links": [
+        "hxxps://mail-quota-renew[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "email_account",
+        "fear_deactivation",
+        "login_request"
+      ],
+      "engineHints": [
+        "mailbox quota + login"
+      ]
+    },
+    {
+      "id": "SCAM-GR-GREEKLISH-001",
+      "category": "bank_greeklish",
+      "channel": "sms_or_chat_or_email",
+      "message": "I karta sas exei blokaristei. Epivevaioste stoixeia tora: hxxps://bank-secure-verify[.]invalid",
+      "links": [
+        "hxxps://bank-secure-verify[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "greeklish",
+        "blocked_card",
+        "verification_request"
+      ],
+      "engineHints": [
+        "Greeklish card blocked"
+      ]
+    },
+    {
+      "id": "SCAM-GR-GREEKLISH-002",
+      "category": "delivery_greeklish",
+      "channel": "sms_or_chat_or_email",
+      "message": "To dema sas kratitai logo telon. Pliroste 1.99e edo: hxxps://elta-parcel-fee[.]invalid",
+      "links": [
+        "hxxps://elta-parcel-fee[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "greeklish",
+        "delivery_fee",
+        "small_fee"
+      ],
+      "engineHints": [
+        "Greeklish parcel fee"
+      ]
+    },
+    {
+      "id": "SCAM-GR-GREEKLISH-003",
+      "category": "aade_greeklish",
+      "channel": "sms_or_chat_or_email",
+      "message": "AADE: dikaiouste epistrofi forou. Diloste IBAN gia katathesi: hxxps://aade-epistrofi[.]invalid",
+      "links": [
+        "hxxps://aade-epistrofi[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "greeklish",
+        "aade_impersonation",
+        "tax_refund",
+        "iban_request"
+      ],
+      "engineHints": [
+        "Greeklish tax refund"
+      ]
+    },
+    {
+      "id": "SCAM-GR-OCR-001",
+      "category": "ocr_noise_bank",
+      "channel": "sms_or_chat_or_email",
+      "message": "A1pha Βank: ύπoπτη συνaλλαγή. Ακυρώστε εδώ: hxxps://alpha-secure-cancel[.]invalid",
+      "links": [
+        "hxxps://alpha-secure-cancel[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "ocr_noise",
+        "bank_impersonation",
+        "fake_fraud_alert"
+      ],
+      "engineHints": [
+        "OCR mixed Greek/Latin characters"
+      ]
+    },
+    {
+      "id": "SCAM-GR-OCR-002",
+      "category": "ocr_noise_gov",
+      "channel": "sms_or_chat_or_email",
+      "message": "gοv.gr: Eκκρεμεί πληpωμή πρoστίμου. hxxps://gov-fine-pay[.]invalid",
+      "links": [
+        "hxxps://gov-fine-pay[.]invalid"
+      ],
+      "expectedRisk": "dangerous",
+      "signals": [
+        "ocr_noise",
+        "public_service_impersonation",
+        "payment_request"
+      ],
+      "engineHints": [
+        "OCR confusions in gov/fine"
+      ]
+    }
+  ]
+}
