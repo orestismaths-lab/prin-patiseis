@@ -16,7 +16,7 @@ export const DEFAULT_CONFIG: ScamConfig = {
     'skroutz.gr', 'e-shop.gr', 'public.gr',
     'stoiximan.gr',
     'cosmoteinsurance.gr', 'cosmote.go.link',
-    'box.go.link',
+    'box.go.link', 'boxfood.page.link',
     'g.page',
   ],
 

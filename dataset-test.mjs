@@ -80,7 +80,7 @@ const KNOWN = [
   'fedex.com','dhl.com','ups.com','skroutz.gr','e-shop.gr','public.gr',
   'stoiximan.gr',
   'cosmoteinsurance.gr','cosmote.go.link',
-  'box.go.link',
+  'box.go.link', 'boxfood.page.link',
   'g.page',
 ]
 function isKnown(d) { const l = d.toLowerCase(); return KNOWN.some(k => l === k || l.endsWith('.' + k)) }
@@ -176,7 +176,8 @@ function analyzeText(text) {
   const domainsStr = domains.join(' ')
   for (const { name, keywords, domains: bd } of BRANDS) {
     if ((containsAny(clean, keywords) || containsAny(domainsStr, keywords)) && !brandDomainPresent(domains, bd)) {
-      const s = unknownDomains.length > 0 ? 35 : 15
+      const s = unknownDomains.length > 0 ? 35 : (domains.length === 0 ? 15 : 0)
+      if (s === 0) continue
       add(signals, `Παρουσίαση ως ${name}`, s); totalScore += s
     }
   }

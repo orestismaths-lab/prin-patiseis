@@ -13,6 +13,11 @@ const messages = [
   { id: 'cosmote-contract', text: 'ΓΙΑ ΤΗΝ ΨΗΦΙΑΚΗ ΥΠΟΓΡΑΦΗ ΤΗΣ ΣΥΜΒΑΣΗΣ ΣΟΥ ΣΤΗΝ COSMOTE, ΑΚΟΛΟΥΘΗΣΕ ΤΟ LINK https://www.cosmote.gr/contract/consent?order=oxQ5XZWgCr9hIlRgE. ΣΕ ΠΕΡΙΠΤΩΣΗ ΠΟΥ Η ΔΙΑΔΙΚΑΣΙΑ ΔΕΝ ΟΛΟΚΛΗΡΩΘΕΙ ΕΝΤΟΣ 24 ΩΡΩΝ, Η ΠΑΡΑΓΓΕΛΙΑ ΣΟΥ ΘΑ ΑΚΥΡΩΘΕΙ.' },
   { id: 'cosmote-ins-pay', text: 'COSMOTE INSURANCE: ΕΞΟΦΛΗΣΕΤΕ ΤΟ ΠΟΣΟ 151.98€ ΓΙΑ ΤΟ ΟΧΗΜΑ ΒΚΒ1087 ΠΑΤΩΝΤΑΣ ΕΔΩ https://www.cosmoteinsurance.gr/payment?merchantRef=abc123 ΑΜΕΣΩΣ ΜΕΤΑ ΤΗΝ ΠΛΗΡΩΜΗ ΘΑ ΛΑΒΕΤΕ ΤΟ ΣΥΜΒΟΛΑΙΟ.' },
   { id: 'cosmote-sec',     text: 'ΤΟ COSMOTE MOBILE SECURITY ΣΥΝΕΧΙΖΕΙ ΝΑ ΠΡΟΣΤΑΤΕΥΕΙ ΤΟ ΚΙΝΗΤΟ ΣΑΣ ΑΠΟ ΙΟΥΣ & HACKERS! ΤΙΣ ΤΕΛΕΥΤΑΙΕΣ 30 ΗΜΕΡΕΣ ΕΧΟΥΜΕ ΑΠΟΚΛΕΙΣΕΙ 12.037 ONLINE ΑΠΕΙΛΕΣ. ΠΛΗΡΟΦΟΡΙΕΣ ΣΤΟ security.cosmote.gr' },
+  // BOX coupon screenshots (2nd batch)
+  { id: 'box-coupon-nolink',   text: 'Από την παραγγελία σου κέρδισες κουπόνι +1.000 πόντων με τον κωδικό PS2CKXB3NSNU. Για να λάβεις τους +1.000 πόντους, εξαργύρωσε το κουπόνι σου παραγγέλνοντας από το ίδιο κατάστημα μέχρι 13/07/2025. BOX. To delivery που πάντα κερδίζεις.' },
+  { id: 'box-coupon-pagelink', text: 'Το κουπόνι σου PS2CKXB3NSNU λήγει αύριο (13-07-2025 23:59). Παράγγειλε τώρα για να μη το χάσεις! https://boxfood.page.link/JVVd' },
+  { id: 'box-coupon-golink',   text: 'Το κουπόνι σου WAJ1KHL58KWL λήγει αύριο (16-01-2026 23:59). Παράγγειλε τώρα για να μη το χάσεις! https://box.go.link/JVVd' },
+  { id: 'box-cosmote-coupon',  text: 'Το 2€ κουπόνι 4EHG1Y2H71 που κέρδισες για το Portofino λήγει αύριο (31-01-2026 23:59). Παράγγειλε τώρα για να μη το χάσεις! Και μην ξεχνάς! Μόνο με το BOX και την COSMOTE TELEKOM κερδίζεις ατελείωτα 2€ για κάθε παραγγελία, σε χιλιάδες καταστήματα!(https://box.go.link/JVVd)' },
 ]
 
 for (const { id, text } of messages) {

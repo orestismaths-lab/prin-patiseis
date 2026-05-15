@@ -3,7 +3,7 @@
     "version": 1,
     "createdAt": "2026-05-15T00:00:00Z",
     "note": "Normal/legitimate Greek messages used to verify the scam engine does not over-alarm. All cases must score < 30 (riskLevel=low).",
-    "totalCases": 46,
+    "totalCases": 50,
     "language": ["el"]
   },
   "cases": [
@@ -328,6 +328,34 @@
       "message": "ΤΟ COSMOTE MOBILE SECURITY ΣΥΝΕΧΙΖΕΙ ΝΑ ΠΡΟΣΤΑΤΕΥΕΙ ΤΟ ΚΙΝΗΤΟ ΣΑΣ ΑΠΟ ΙΟΥΣ & HACKERS! ΤΙΣ ΤΕΛΕΥΤΑΙΕΣ 30 ΗΜΕΡΕΣ ΕΧΟΥΜΕ ΑΠΟΚΛΕΙΣΕΙ 12.037 ONLINE ΑΠΕΙΛΕΣ. ΠΛΗΡΟΦΟΡΙΕΣ ΣΤΟ security.cosmote.gr",
       "expectedRisk": "low",
       "notes": "Cosmote Mobile Security status update. security.cosmote.gr ends with .cosmote.gr (known). 'ΙΟΥΣ' ≠ 'ιος' (fear word). 'hackers' ≠ 'hacked'. Brand: cosmote keyword + security.cosmote.gr → brand domain cosmote.gr match → no impersonation. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-013",
+      "category": "real_world_sms",
+      "message": "Από την παραγγελία σου κέρδισες κουπόνι +1.000 πόντων με τον κωδικό PS2CKXB3NSNU. Για να λάβεις τους +1.000 πόντους, εξαργύρωσε το κουπόνι σου παραγγέλνοντας από το ίδιο κατάστημα μέχρι 13/07/2025. BOX. To delivery που πάντα κερδίζεις.",
+      "expectedRisk": "suspicious",
+      "notes": "BOX loyalty coupon (no link). Known false positive: 'κωδικό' (coupon code) matches credentialWords 'κωδικ' (+12) and 'κέρδισες'+'κερδίζεις' both match rewardWords (+20). Total 32pts — 2pts over threshold. No link, so hard rule cannot fire. Documented as known engine limitation: 'κωδικ' stem is ambiguous between credential codes and coupon codes."
+    },
+    {
+      "id": "LEGIT-REAL-014",
+      "category": "real_world_sms",
+      "message": "Το κουπόνι σου PS2CKXB3NSNU λήγει αύριο (13-07-2025 23:59). Παράγγειλε τώρα για να μη το χάσεις! https://boxfood.page.link/JVVd",
+      "expectedRisk": "low",
+      "notes": "BOX coupon expiry reminder. boxfood.page.link is known (Firebase Dynamic Links for BOX Food). 'λήγει' + 'τώρα' = 2 urgency words = 16pts. Score: 16pts."
+    },
+    {
+      "id": "LEGIT-REAL-015",
+      "category": "real_world_sms",
+      "message": "Το κουπόνι σου WAJ1KHL58KWL λήγει αύριο (16-01-2026 23:59). Παράγγειλε τώρα για να μη το χάσεις! https://box.go.link/JVVd",
+      "expectedRisk": "low",
+      "notes": "BOX coupon expiry reminder. box.go.link is known. 'λήγει' + 'τώρα' = 16pts urgency. Score: 16pts."
+    },
+    {
+      "id": "LEGIT-REAL-016",
+      "category": "real_world_sms",
+      "message": "Το 2€ κουπόνι 4EHG1Y2H71 που κέρδισες για το Portofino λήγει αύριο (31-01-2026 23:59). Παράγγειλε τώρα για να μη το χάσεις! Και μην ξεχνάς! Μόνο με το BOX και την COSMOTE TELEKOM κερδίζεις ατελείωτα 2€ για κάθε παραγγελία, σε χιλιάδες καταστήματα!(https://box.go.link/JVVd)",
+      "expectedRisk": "suspicious",
+      "notes": "BOX+Cosmote partnership promo (known false positive). Aggressive marketing language: 'λήγει'+'τώρα' urgency(16), '€' payment(7), 'κέρδισες'+'κερδίζεις' reward(20) = 43pts. Brand impersonation (COSMOTE mentioned, box.go.link is known but not cosmote.gr) now scores 0 after fix — but urgency+reward+payment alone = 43pts suspicious. Documents that aggressive promotional messages resembling scam patterns will trigger caution."
     }
   ]
 }

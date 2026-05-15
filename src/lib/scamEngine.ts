@@ -129,12 +129,14 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     totalScore += score
   }
 
-  // 9. Brand impersonation — score 35 when unknown domain also present, else 15
-  // Check both clean text AND domain names (typosquatting often puts brand name in domain)
+  // 9. Brand impersonation — score 35 when unknown domain also present,
+  // 15 when there is no link at all (vishing), 0 when only known domains present
+  // (partner brand mention alongside a verified known domain is not impersonation)
   const domainsStr = domains.join(' ')
   for (const brand of greek.brands) {
     if ((containsAny(clean, brand.keywords) || containsAny(domainsStr, brand.keywords)) && !brandDomainPresent(domains, brand.domains)) {
-      const score = unknownDomains.length > 0 ? 35 : 15
+      const score = unknownDomains.length > 0 ? 35 : (domains.length === 0 ? 15 : 0)
+      if (score === 0) continue
       signals.push({ label: `Πιθανή παρουσίαση ως ${brand.name}`, score })
       totalScore += score
     }
