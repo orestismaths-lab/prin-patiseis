@@ -1,73 +1,95 @@
-// Local test runner — loads scam-message-dataset.json and runs all cases
-// through the real scam engine (src/lib/scamEngine.ts).
+// Local test runner — runs both scam and legit datasets through the real engine.
 // Run with: npm run test:scam
 
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { analyzeText } from '@/lib/scamEngine'
+import type { RiskLevel } from '@/types/scam'
 
 interface DatasetCase {
   id: string
   category: string
-  expectedRisk: 'low' | 'suspicious' | 'dangerous'
+  expectedRisk: RiskLevel
   message: string
   notes?: string
 }
 
 interface Dataset {
-  totalCases: number
-  language: string[]
+  totalCases?: number
   cases: DatasetCase[]
 }
 
-const datasetPath = join(process.cwd(), 'scam-message-dataset.json')
-const dataset: Dataset = JSON.parse(readFileSync(datasetPath, 'utf8'))
-
-let passed = 0
-let failed = 0
-const failures: { id: string; category: string; expected: string; got: string; score: number; reasons: string[] }[] = []
-
-console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-console.log('  Scam Engine Test Runner — scam-message-dataset.json')
-console.log(`  ${dataset.totalCases} cases | language: ${dataset.language.join(', ')}`)
-console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n')
-
-for (const c of dataset.cases) {
-  const result = analyzeText(c.message)
-  const ok = result.riskLevel === c.expectedRisk
-
-  if (ok) {
-    passed++
-    console.log(`  ✅  [${c.id}] → ${result.riskLevel.toUpperCase()} (${result.totalScore})`)
-  } else {
-    failed++
-    const reasons = result.signals.map((s) => `${s.label}(${s.score})`)
-    failures.push({
-      id: c.id,
-      category: c.category,
-      expected: c.expectedRisk,
-      got: result.riskLevel,
-      score: result.totalScore,
-      reasons,
-    })
-    console.log(`  ❌  [${c.id}] expected ${c.expectedRisk.toUpperCase()} | got ${result.riskLevel.toUpperCase()} (${result.totalScore})`)
-    console.log(`       ${c.message.slice(0, 100)}`)
-    console.log(`       signals: ${reasons.join(', ')}`)
-  }
+interface RunResult {
+  passed: number
+  failed: number
+  failures: { id: string; category: string; expected: string; got: string; score: number; reasons: string[] }[]
 }
 
-const total = passed + failed
-console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-console.log(`  Result: ${passed}/${total} passed — ${failed} failed`)
+function runDataset(label: string, dataset: Dataset): RunResult {
+  const result: RunResult = { passed: 0, failed: 0, failures: [] }
 
-if (failures.length > 0) {
-  console.log('\n  FAILURES SUMMARY:')
-  for (const f of failures) {
+  console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
+  console.log(`  ${label}  (${dataset.cases.length} cases)`)
+  console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
+
+  for (const c of dataset.cases) {
+    const r = analyzeText(c.message)
+    const ok = r.riskLevel === c.expectedRisk
+
+    if (ok) {
+      result.passed++
+      console.log(`  ✅  [${c.id}] → ${r.riskLevel.toUpperCase()} (${r.totalScore})`)
+    } else {
+      result.failed++
+      const reasons = r.signals.map((s) => `${s.label}(${s.score})`)
+      result.failures.push({
+        id: c.id,
+        category: c.category,
+        expected: c.expectedRisk,
+        got: r.riskLevel,
+        score: r.totalScore,
+        reasons,
+      })
+      console.log(`  ❌  [${c.id}] expected ${c.expectedRisk.toUpperCase()} | got ${r.riskLevel.toUpperCase()} (${r.totalScore})`)
+      console.log(`       ${c.message.slice(0, 100)}`)
+      console.log(`       signals: ${reasons.join(', ')}`)
+    }
+  }
+
+  return result
+}
+
+function load(filename: string): Dataset {
+  return JSON.parse(readFileSync(join(process.cwd(), filename), 'utf8'))
+}
+
+const scamDataset = load('scam-message-dataset.json')
+const legitDataset = load('legit-message-dataset.json')
+
+const scamResult = runDataset('Scam messages — scam-message-dataset.json', scamDataset)
+const legitResult = runDataset('Legit messages — legit-message-dataset.json', legitDataset)
+
+const totalPassed = scamResult.passed + legitResult.passed
+const totalFailed = scamResult.failed + legitResult.failed
+const totalCases = totalPassed + totalFailed
+
+// Summary
+console.log(`\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
+console.log('  SUMMARY')
+console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`)
+console.log(`  Scam cases:   ${scamResult.passed}/${scamResult.passed + scamResult.failed} passed`)
+console.log(`  Legit cases:  ${legitResult.passed}/${legitResult.passed + legitResult.failed} passed`)
+console.log(`  Total:        ${totalPassed}/${totalCases} passed — ${totalFailed} failed`)
+
+const allFailures = [...scamResult.failures, ...legitResult.failures]
+if (allFailures.length > 0) {
+  console.log('\n  FAILURES:')
+  for (const f of allFailures) {
     console.log(`    [${f.id}] (${f.category})`)
     console.log(`      expected=${f.expected}  got=${f.got}(${f.score})`)
-    console.log(`      reasons: ${f.reasons.join(', ')}`)
+    console.log(`      signals: ${f.reasons.join(', ')}`)
   }
 }
-console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n')
+console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`)
 
-process.exit(failed > 0 ? 1 : 0)
+process.exit(totalFailed > 0 ? 1 : 0)

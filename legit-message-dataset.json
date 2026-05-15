@@ -1,0 +1,249 @@
+{
+  "_meta": {
+    "version": 1,
+    "createdAt": "2026-05-15T00:00:00Z",
+    "note": "Normal/legitimate Greek messages used to verify the scam engine does not over-alarm. All cases must score < 30 (riskLevel=low).",
+    "totalCases": 34,
+    "language": ["el"]
+  },
+  "cases": [
+    {
+      "id": "LEGIT-GR-APPT-001",
+      "category": "appointment_reminder",
+      "message": "Υπενθύμιση ραντεβού: Δευτέρα 19/05 στις 11:30 με τον Δρ. Παπαδόπουλο στο ιατρείο του. Για ακύρωση καλέστε 210-1234567.",
+      "expectedRisk": "low",
+      "notes": "No urgency, no links, no credential requests, no payment. Simple reminder."
+    },
+    {
+      "id": "LEGIT-GR-APPT-002",
+      "category": "appointment_reminder",
+      "message": "Σας υπενθυμίζουμε το ραντεβού σας στο οδοντιατρείο Σμυρλή την Τρίτη 20/05 στις 18:00. Καλή επιτυχία!",
+      "expectedRisk": "low",
+      "notes": "No triggers at all."
+    },
+    {
+      "id": "LEGIT-GR-APPT-003",
+      "category": "appointment_reminder",
+      "message": "Ο τεχνικός θα επισκεφθεί την Τετάρτη 21/05 μεταξύ 10:00-14:00 για συντήρηση του κλιματιστικού σας. Παρακαλώ να είστε στο σπίτι.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-APPT-004",
+      "category": "appointment_reminder",
+      "message": "Αύριο έχετε αιματολογικές εξετάσεις στο διαγνωστικό κέντρο στις 08:30. Παρακαλώ να είστε νηστικοί για 8 ώρες.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-COURIER-001",
+      "category": "courier_delivery",
+      "message": "Το δέμα σας (αριθμός παρακολούθησης: GR123456789) παραδόθηκε επιτυχώς στις 14:35. Παραλήπτης: Γ. Παπαδόπουλος.",
+      "expectedRisk": "low",
+      "notes": "Delivery confirmation, no link, no payment request."
+    },
+    {
+      "id": "LEGIT-GR-COURIER-002",
+      "category": "courier_delivery",
+      "message": "Η αποστολή σας από ACS βρίσκεται σε διανομή. Αναμενόμενη παράδοση: σήμερα έως τις 18:00.",
+      "expectedRisk": "low",
+      "notes": "'σήμερα' gives urgency +8pts but total stays at 8, well below 30."
+    },
+    {
+      "id": "LEGIT-GR-COURIER-003",
+      "category": "courier_delivery",
+      "message": "Ο διανομέας πέρασε αλλά δεν σας βρήκε. Επικοινωνήστε μαζί μας στο 801-123-4567 για να κανονίσετε νέα παράδοση.",
+      "expectedRisk": "low",
+      "notes": "No links, no payment request, no suspicious signals."
+    },
+    {
+      "id": "LEGIT-GR-COURIER-004",
+      "category": "courier_delivery",
+      "message": "Η παραγγελία σας #78542 αποστάλθηκε σήμερα από το κατάστημα. Αναμένεται σε 2-3 εργάσιμες ημέρες. Ευχαριστούμε!",
+      "expectedRisk": "low",
+      "notes": "'σήμερα' +8pts. No link, no payment."
+    },
+    {
+      "id": "LEGIT-GR-BANK-001",
+      "category": "bank_alert",
+      "message": "Υπόλοιπο λογαριασμού ...1234 σήμερα στις 09:00: 2.456,78€. Για πληροφορίες καλέστε το 210-4848484.",
+      "expectedRisk": "low",
+      "notes": "'σήμερα' +8, '€' +7. No link, no credentials requested. Total 15pts."
+    },
+    {
+      "id": "LEGIT-GR-BANK-002",
+      "category": "bank_alert",
+      "message": "Η κάρτα σας χρησιμοποιήθηκε για αγορά 45,00€ στο ΑΒ Βασιλόπουλος στις 13:22. Αν δεν εκτελέσατε εσείς τη συναλλαγή, καλέστε την τράπεζά σας.",
+      "expectedRisk": "low",
+      "notes": "'€' +7pts. No link — so tx-alert hard rule does not fire. Total 7pts."
+    },
+    {
+      "id": "LEGIT-GR-BANK-003",
+      "category": "bank_alert",
+      "message": "Η μηνιαία κατάσταση λογαριασμού σας Απριλίου είναι διαθέσιμη. Για πληροφορίες καλέστε το 210-4848484.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-BANK-004",
+      "category": "bank_alert",
+      "message": "Η κάρτα σας ενεργοποιήθηκε επιτυχώς. Για ασφαλή χρήση, μην αποκαλύπτετε τον κωδικό σας σε κανέναν.",
+      "expectedRisk": "low",
+      "notes": "'κωδικ' +12pts. No link — hard rule does not fire. Total 12pts."
+    },
+    {
+      "id": "LEGIT-GR-UTILITY-001",
+      "category": "utility_bill",
+      "message": "Λογαριασμός ηλεκτρικής ενέργειας Μαρτίου: 87,50€. Ημερομηνία πληρωμής: 25/05/2026. Για πληροφορίες: 11770.",
+      "expectedRisk": "low",
+      "notes": "'€' +7pts. 'ηλεκτρικής' (genitive) does not match keyword 'ηλεκτρικο' (neuter). No link."
+    },
+    {
+      "id": "LEGIT-GR-UTILITY-002",
+      "category": "utility_bill",
+      "message": "Λογαριασμός ΕΥΔΑΠ (νερό) Απριλίου: 32,40€. Εξόφληση έως 10/06/2026. Τηλ.: 11130.",
+      "expectedRisk": "low",
+      "notes": "'€' +7pts. ΕΥΔΑΠ not a brand keyword. No link."
+    },
+    {
+      "id": "LEGIT-GR-UTILITY-003",
+      "category": "utility_bill",
+      "message": "Λογαριασμός φυσικού αερίου Απριλίου: 54,20€. Κατανάλωση: 120 m³. Επικοινωνία: 210-9000600.",
+      "expectedRisk": "low",
+      "notes": "'€' +7pts. Total 7pts."
+    },
+    {
+      "id": "LEGIT-GR-TELCO-001",
+      "category": "telecom_bill",
+      "message": "Λογαριασμός κινητής τηλεφωνίας Μαΐου: 24,90€. Αυτόματη χρέωση στις 05/06. Λεπτομέρειες στην εφαρμογή.",
+      "expectedRisk": "low",
+      "notes": "'€' +7, 'χρέωση' +7. Total 14pts. No link."
+    },
+    {
+      "id": "LEGIT-GR-TELCO-002",
+      "category": "telecom_bill",
+      "message": "Ο μηνιαίος λογαριασμός internet (συνδρομή) Απριλίου: 18,90€. Επικοινωνία: 13888.",
+      "expectedRisk": "low",
+      "notes": "'συνδρομή' +7, '€' +7. Total 14pts."
+    },
+    {
+      "id": "LEGIT-GR-TELCO-003",
+      "category": "telecom_bill",
+      "message": "Η εξόφληση του λογαριασμού σας καταχωρήθηκε επιτυχώς. Σας ευχαριστούμε.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-ORDER-001",
+      "category": "store_order",
+      "message": "Η παραγγελία σας #54321 επιβεβαιώθηκε. Εκτιμώμενη παράδοση εντός 2-4 εργάσιμων ημερών. Ευχαριστούμε για την αγορά!",
+      "expectedRisk": "low",
+      "notes": "'εντός' +8pts (urgency). 'επιβεβαιώθηκε' does NOT match CREDS stem 'επιβεβαιωσ'. Total 8pts."
+    },
+    {
+      "id": "LEGIT-GR-ORDER-002",
+      "category": "store_order",
+      "message": "Η παραγγελία σας #54321 αποστάλθηκε και αναμένεται να φτάσει 23-25 Μαΐου.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-ORDER-003",
+      "category": "store_order",
+      "message": "Η παραγγελία σας είναι έτοιμη για παραλαβή στο κατάστημα Public Αθήνα (Πατησίων 30). Ωράριο: 09:00-21:00.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-CS-001",
+      "category": "customer_service",
+      "message": "Το αίτημά σας (#REQ-789) παρελήφθη και θα απαντηθεί εντός 2 εργάσιμων ημερών. Κωδικός παρακολούθησης: TKT-2026-456.",
+      "expectedRisk": "low",
+      "notes": "'εντός' +8 (urgency). 'κωδικ' is present but note this refers to a ticket tracking code, not credentials. +12pts. Total 20pts — still low."
+    },
+    {
+      "id": "LEGIT-GR-CS-002",
+      "category": "customer_service",
+      "message": "Η συνδρομή σας ανανεώθηκε αυτόματα. Ισχύει έως 31/12/2026. Ευχαριστούμε για την εμπιστοσύνη σας.",
+      "expectedRisk": "low",
+      "notes": "'συνδρομή' +7pts. No link, no credentials. Total 7pts."
+    },
+    {
+      "id": "LEGIT-GR-CS-003",
+      "category": "customer_service",
+      "message": "Καλώς ήρθατε! Η εγγραφή σας ολοκληρώθηκε επιτυχώς. Μπορείτε να επικοινωνείτε μαζί μας στο 210-0000000.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-PHARMA-001",
+      "category": "pharmacy_doctor",
+      "message": "Η συνταγή σας είναι έτοιμη για παραλαβή από το φαρμακείο. Θα χρειαστείτε την ταυτότητά σας.",
+      "expectedRisk": "low",
+      "notes": "'ταυτοτητα' +12pts (CREDS). No link — hard rule does not fire. Total 12pts."
+    },
+    {
+      "id": "LEGIT-GR-PHARMA-002",
+      "category": "pharmacy_doctor",
+      "message": "Υπενθύμιση εμβολιασμού: Η επόμενη δόση σας είναι προγραμματισμένη για 15/06 στο Κέντρο Υγείας Αθηνών.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-PHARMA-003",
+      "category": "pharmacy_doctor",
+      "message": "Υπενθύμιση λήψης φαρμάκου: Σήμερα στις 21:00. Παρακαλώ μην παραλείψετε τη δόση σας.",
+      "expectedRisk": "low",
+      "notes": "'σήμερα' +8pts. Total 8pts."
+    },
+    {
+      "id": "LEGIT-GR-SCHOOL-001",
+      "category": "school_municipality",
+      "message": "Ανακοίνωση σχολείου: Αύριο Πέμπτη 16/5 δεν θα υπάρξουν μαθήματα λόγω εκδήλωσης αποφοίτησης. Ευχαριστούμε.",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-MUNI-001",
+      "category": "school_municipality",
+      "message": "Ο Δήμος Αθηναίων ενημερώνει: Διακοπή υδροδότησης στην οδό Σταδίου την Παρασκευή 17/5, 08:00-14:00 για εργασίες δικτύου.",
+      "expectedRisk": "low",
+      "notes": "'δήμος' fires brand impersonation +15 (no domain). 'διακοπή' +10 (fear). Total 25pts — still low."
+    },
+    {
+      "id": "LEGIT-GR-SCHOOL-002",
+      "category": "school_municipality",
+      "message": "Πρόγραμμα εξετάσεων Ιουνίου 2026: Δευτέρα 01/06 Μαθηματικά, Τρίτη 02/06 Φυσική, Τετάρτη 03/06 Έκθεση. Καλή επιτυχία!",
+      "expectedRisk": "low",
+      "notes": "No triggers."
+    },
+    {
+      "id": "LEGIT-GR-OTP-001",
+      "category": "otp_legitimate",
+      "message": "Ο κωδικός για την επόμενη συναλλαγή σας είναι: 847291. Ισχύει για 5 λεπτά. Μην τον κοινοποιείτε σε κανέναν.",
+      "expectedRisk": "low",
+      "notes": "'κωδικ' +12pts. No link — hard rule does not fire. Total 12pts."
+    },
+    {
+      "id": "LEGIT-GR-OTP-002",
+      "category": "otp_legitimate",
+      "message": "Κωδικός μίας χρήσης (OTP): 563892. Εισάγετέ τον στην εφαρμογή σας. Δεν ζητάμε ποτέ τους κωδικούς σας μέσω SMS.",
+      "expectedRisk": "low",
+      "notes": "'κωδικ' +12 and 'otp' +12 = cc=2, s=24pts. No link. Total 24pts."
+    },
+    {
+      "id": "LEGIT-GR-OTP-003",
+      "category": "otp_legitimate",
+      "message": "Κωδικός επαλήθευσης: 394021. Αν δεν ζητήσατε αυτό τον κωδικό, αγνοήστε αυτό το μήνυμα.",
+      "expectedRisk": "low",
+      "notes": "'κωδικ' +12pts. 'επαλήθευση' does NOT match CREDS 'επιβεβαιωσ'. Total 12pts."
+    },
+    {
+      "id": "LEGIT-GR-OTP-004",
+      "category": "otp_legitimate",
+      "message": "Ο κωδικός πρόσβασης άλλαξε επιτυχώς. Αν δεν το κάνατε εσείς, επικοινωνήστε άμεσα με την υποστήριξη στο 210-0000000.",
+      "expectedRisk": "low",
+      "notes": "'κωδικ' +12, 'αμεσα' +8 (urgency). Total 20pts."
+    }
+  ]
+}
