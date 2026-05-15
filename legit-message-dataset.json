@@ -3,7 +3,7 @@
     "version": 1,
     "createdAt": "2026-05-15T00:00:00Z",
     "note": "Normal/legitimate Greek messages used to verify the scam engine does not over-alarm. All cases must score < 30 (riskLevel=low).",
-    "totalCases": 34,
+    "totalCases": 46,
     "language": ["el"]
   },
   "cases": [
@@ -244,6 +244,90 @@
       "message": "Ο κωδικός πρόσβασης άλλαξε επιτυχώς. Αν δεν το κάνατε εσείς, επικοινωνήστε άμεσα με την υποστήριξη στο 210-0000000.",
       "expectedRisk": "low",
       "notes": "'κωδικ' +12, 'αμεσα' +8 (urgency). Total 20pts."
+    },
+    {
+      "id": "LEGIT-REAL-001",
+      "category": "real_world_sms",
+      "message": "ΕΩΣ 150€ ΣΕ FREE BET ΕΙΝΑΙ ΔΙΑΘΕΣΙΜΟ ΜΕ ΤΗΝ ΕΠΟΜΕΝΗ ΚΑΤΆΘΕΣΗ ΜΕΧΡΙ ΤΟ ΤΕΛΟΣ ΤΗΣ ΗΜΕΡΑΣ. ΑΠΕΓΓΡΑΦΗ https://www.stoiximan.gr/myaccount/unsubscribe?channel=sms",
+      "expectedRisk": "low",
+      "notes": "Stoiximan promotional SMS. stoiximan.gr is known domain. 'ΕΩΣ' not an urgency word. '€' +7, 'καταθεσ' +7 (payment) = 14+brand_impersonation? stoiximan brand not in brands list. Actual score: 24pts."
+    },
+    {
+      "id": "LEGIT-REAL-002",
+      "category": "real_world_sms",
+      "message": "ΠΡΟΓΡΑΜΜΑ ΠΡΟΛΑΜΒΑΝΩ ΑΠΟ ΤΟ ΥΠΟΥΡΓΕΙΟ ΥΓΕΙΑΣ. ΤΟ ΠΑΡΑΠΕΜΠΤΙΚΟ ΣΑΣ ΓΙΑ ΤΟΝ ΑΜΚΑ 150179***33 ΕΧΕΙ ΠΑΡΕΙ ΠΑΡΑΤΑΣΗ ΕΩΣ 31/03/2026. ΠΛΗΡΟΦΟΡΙΕΣ ΣΤΟ cardio.gov.gr",
+      "expectedRisk": "low",
+      "notes": "IDIKA health program. cardio.gov.gr ends with .gov.gr (known). 'αμκα' in credentialWords (+12) but hard rule requires unknown domain — cardio.gov.gr is known. No hard rule trigger. Actual score: 12pts."
+    },
+    {
+      "id": "LEGIT-REAL-003",
+      "category": "real_world_sms",
+      "message": "ΣΑΣ ΥΠΕΝΘΥΜΙΖΟΥΜΕ ΤΟ ΡΑΝΤΕΒΟΥ ΜΑΣ ΠΕΜΠΤΗ 27/3 ΚΑΙ ΩΡΑ 19:30. ΓΙΑ ΟΠΟΙΑ ΑΛΛΑΓΗ, ΠΑΡΑΚΑΛΩ ΚΑΛΕΣΤΕ 2106813015 @CutMyHair ΑΝ.ΠΑΠΑΝΔΡΕΟΥ 85-87",
+      "expectedRisk": "low",
+      "notes": "CutMyHair appointment reminder. No links, no payment, no urgency keywords. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-004",
+      "category": "real_world_sms",
+      "message": "Ο ΛΟΓΑΡΙΑΣΜΟΣ ΜΑΪΟΥ 35,90€ ΛΗΓΕΙ ΣΤΙΣ 05/06/2026. ΔΙΑΘΕΣΙΜΟΣ ΣΤΟ https://e-bill.cosmote.gr/web/guest/ebill-tab-1?token=MS-7OYIN ΚΩΔ. ΠΛΗΡΩΜΗΣ RF84903. ΔΩΡΟ 5GB ΜΕ ΠΛΗΡΩΜΗ ΣΤΟ COSMOTE APP https://cosmote.go.link/openBills",
+      "expectedRisk": "low",
+      "notes": "Cosmote bill SMS. Both domains (e-bill.cosmote.gr, cosmote.go.link) are known. 'ληγει' +8 urgency, '€' +7, 'πληρωμη' +7, 'χρεωση' not present. cosmote keyword → brand check passes since e-bill.cosmote.gr ends with cosmote.gr. Actual score: 25pts."
+    },
+    {
+      "id": "LEGIT-REAL-005",
+      "category": "real_world_sms",
+      "message": "ΣΕ ΣΥΝΕΧΕΙΑ ΤΗΣ ΕΠΙΚΟΙΝΩΝΙΑΣ ΜΑΣ, ΣΑΣ ΕΝΗΜΕΡΩΝΟΥΜΕ ΟΤΙ ΘΑ ΣΑΣ ΕΠΙΣΤΡΑΦΕΙ ΤΟ ΠΟΣΟ 28.64€ ΠΡΟ ΦΠΑ ΣΤΟΝ ΕΠΟΜΕΝΟ ΛΟΓΑΡΙΑΣΜΟ. ΠΑΡΑΜΕΝΟΥΜΕ ΣΤΗ ΔΙΑΘΕΣΗ ΣΑΣ.",
+      "expectedRisk": "low",
+      "notes": "Cosmote refund notification. No link. '€' +7, 'ποσο' +7. Total 14pts."
+    },
+    {
+      "id": "LEGIT-REAL-006",
+      "category": "real_world_sms",
+      "message": "Η ΥΠΗΡΕΣΙΑ MultiSIM ΕΝΕΡΓΟΠΟΙΗΘΗΚΕ ΓΙΑ ΤΟ 6974908918 ΚΑΙ ΑΠΟ ΤΗΝ ΚΑΡΤΑ eSIM 89300100241029265698 multiSIM Green. ΓΙΑ ΝΑ ΕΓΚΑΤΑΣΤΗΣΕΤΕ ΤΗΝ eSIM ΑΚΟΛΟΥΘΗΣΤΕ ΤΙΣ ΟΔΗΓΙΕΣ ΕΓΚΑΤΑΣΤΑΣΗΣ ΠΟΥ ΘΑ ΒΡΕΙΤΕ ΕΙΤΕ ΣΤΗΝ ΕΠΙΣΤΟΛΗ ΠΟΥ ΠΗΡΑΤΕ ΑΠΟ ΤΟ ΚΑΤΑΣΤΗΜΑ.",
+      "expectedRisk": "low",
+      "notes": "Cosmote eSIM activation. 'αντικατασταση sim' fear word NOT present (different phrasing). No links. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-007",
+      "category": "real_world_sms",
+      "message": "Η παραγγελία σου (κωδ. 9DFEA17839C5) ετοιμάζεται στο κατάστημα SIMPLY BURGERS. Έχεις διαλέξει πληρωμή με κάρτα και το συνολικό ποσό είναι 17.38 €. Με την παραγγελία σου κέρδισες 2250 πόντους.",
+      "expectedRisk": "low",
+      "notes": "BOX food order confirmation. No link. 'κέρδισες' contains 'κερδισ' (+10 reward). '€' +7, 'πληρωμή' +7 (payment). Total 24pts."
+    },
+    {
+      "id": "LEGIT-REAL-008",
+      "category": "real_world_sms",
+      "message": "2,04€ σε πόντους BOX σε περιμένουν. Παράγγειλε και κέρδισε εκπτώσεις εξαργυρώνοντας τους πόντους σου! https://box.go.link/app",
+      "expectedRisk": "low",
+      "notes": "BOX loyalty points. box.go.link is known domain. 'κέρδισε' +10 (reward), '€' +7. Total 17pts."
+    },
+    {
+      "id": "LEGIT-REAL-009",
+      "category": "real_world_sms",
+      "message": "Η ΟΜΑΔΑ ΤΟΥ COSMOTE INSURANCE ΕΙΜΑΣΤΕ ΠΑΝΤΑ ΔΙΠΛΑ ΣΟΥ ΣΤΟ 2108018000, 24 ΩΡΕΣ ΤΟ 24ΩΡΟ. ΘΑ ΕΚΤΙΜΟΥΣΑΜΕ ΝΑ ΜΑΣ ΑΞΙΟΛΟΓΗΣΕΙΣ ΣΤΗ GOOGLE. https://g.page/r/CUbqMCRIoeSuEAE/review",
+      "expectedRisk": "low",
+      "notes": "Cosmote Insurance Google review request. g.page is known. '24 ωρες' +8 urgency, brand 'cosmote' present — cosmoteinsurance.gr in Cosmote brand domains so no impersonation. Actual score: 23pts."
+    },
+    {
+      "id": "LEGIT-REAL-010",
+      "category": "real_world_sms",
+      "message": "ΓΙΑ ΤΗΝ ΨΗΦΙΑΚΗ ΥΠΟΓΡΑΦΗ ΤΗΣ ΣΥΜΒΑΣΗΣ ΣΟΥ ΣΤΗΝ COSMOTE, ΑΚΟΛΟΥΘΗΣΕ ΤΟ LINK https://www.cosmote.gr/contract/consent?order=oxQ5XZWgCr9hIlRgE. ΣΕ ΠΕΡΙΠΤΩΣΗ ΠΟΥ Η ΔΙΑΔΙΚΑΣΙΑ ΔΕΝ ΟΛΟΚΛΗΡΩΘΕΙ ΕΝΤΟΣ 24 ΩΡΩΝ, Η ΠΑΡΑΓΓΕΛΙΑ ΣΟΥ ΘΑ ΑΚΥΡΩΘΕΙ.",
+      "expectedRisk": "low",
+      "notes": "Cosmote contract digital signature. www.cosmote.gr is known. 'εντος 24' +8 urgency. Brand check: cosmote keyword + cosmote.gr domain present → no impersonation. Actual score: 16pts."
+    },
+    {
+      "id": "LEGIT-REAL-011",
+      "category": "real_world_sms",
+      "message": "COSMOTE INSURANCE: ΕΞΟΦΛΗΣΕΤΕ ΤΟ ΠΟΣΟ 151.98€ ΓΙΑ ΤΟ ΟΧΗΜΑ ΒΚΒ1087 ΠΑΤΩΝΤΑΣ ΕΔΩ https://www.cosmoteinsurance.gr/payment?merchantRef=abc123 ΑΜΕΣΩΣ ΜΕΤΑ ΤΗΝ ΠΛΗΡΩΜΗ ΘΑ ΛΑΒΕΤΕ ΤΟ ΣΥΜΒΟΛΑΙΟ.",
+      "expectedRisk": "low",
+      "notes": "Cosmote Insurance vehicle insurance payment. www.cosmoteinsurance.gr is known, and cosmoteinsurance.gr is in Cosmote brand domains → no impersonation. 'αμεσωσ' +8 urgency, '€' +7, 'εξοφλησετε'/'ποσο'/'πληρωμη' payment words. Actual score: 22pts."
+    },
+    {
+      "id": "LEGIT-REAL-012",
+      "category": "real_world_sms",
+      "message": "ΤΟ COSMOTE MOBILE SECURITY ΣΥΝΕΧΙΖΕΙ ΝΑ ΠΡΟΣΤΑΤΕΥΕΙ ΤΟ ΚΙΝΗΤΟ ΣΑΣ ΑΠΟ ΙΟΥΣ & HACKERS! ΤΙΣ ΤΕΛΕΥΤΑΙΕΣ 30 ΗΜΕΡΕΣ ΕΧΟΥΜΕ ΑΠΟΚΛΕΙΣΕΙ 12.037 ONLINE ΑΠΕΙΛΕΣ. ΠΛΗΡΟΦΟΡΙΕΣ ΣΤΟ security.cosmote.gr",
+      "expectedRisk": "low",
+      "notes": "Cosmote Mobile Security status update. security.cosmote.gr ends with .cosmote.gr (known). 'ΙΟΥΣ' ≠ 'ιος' (fear word). 'hackers' ≠ 'hacked'. Brand: cosmote keyword + security.cosmote.gr → brand domain cosmote.gr match → no impersonation. Score: 0pts."
     }
   ]
 }

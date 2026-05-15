@@ -256,12 +256,15 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     totalScore += 25
   }
 
-  // ── Hard rule: link + credential request = always dangerous ──────────────────
+  // ── Hard rule: unknown/defanged link + credential request = always dangerous ──
+  // Requires an unknown domain or defanged link — a legit gov.gr link mentioning
+  // ΑΜΚΑ in context should NOT trigger this.
   const hasCredentialRequest = containsAny(clean, greek.credentialWords)
-  if (messageHasLink && hasCredentialRequest) {
+  const linkIsRisky = unknownDomains.length > 0 || hasDefangedLink(text)
+  if (linkIsRisky && hasCredentialRequest) {
     totalScore = Math.max(totalScore, 70)
     if (!signals.some((s) => s.label.includes('σύνδεσμος'))) {
-      signals.push({ label: 'Σύνδεσμος + ζήτηση ευαίσθητων στοιχείων', score: 70 })
+      signals.push({ label: 'Ύποπτος σύνδεσμος + ζήτηση ευαίσθητων στοιχείων', score: 70 })
     }
   }
 

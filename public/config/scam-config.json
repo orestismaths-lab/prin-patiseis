@@ -43,7 +43,13 @@
     "ups.com",
     "skroutz.gr",
     "e-shop.gr",
-    "public.gr"
+    "public.gr",
+    "stoiximan.gr",
+    "cosmoteinsurance.gr",
+    "cosmote.go.link",
+    "box.go.link",
+    "boxfood.page.link",
+    "g.page"
   ],
   "phishingDomains": [
     "0-9-8-7-6-5-4-3-2-1-0.live",
@@ -1348,7 +1354,8 @@
           "epay"
         ],
         "domains": [
-          "cosmote.gr"
+          "cosmote.gr",
+          "cosmoteinsurance.gr"
         ]
       },
       {

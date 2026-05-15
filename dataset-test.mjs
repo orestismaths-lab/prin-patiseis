@@ -78,6 +78,10 @@ const KNOWN = [
   'yme.gov.gr','netflix.com','amazon.com','amazon.co.uk',
   'microsoft.com','apple.com','icloud.com',
   'fedex.com','dhl.com','ups.com','skroutz.gr','e-shop.gr','public.gr',
+  'stoiximan.gr',
+  'cosmoteinsurance.gr','cosmote.go.link',
+  'box.go.link',
+  'g.page',
 ]
 function isKnown(d) { const l = d.toLowerCase(); return KNOWN.some(k => l === k || l.endsWith('.' + k)) }
 
@@ -98,7 +102,7 @@ const BRANDS = [
   { name: 'Alpha Bank', keywords: ['alpha bank','alphabank','a1pha'], domains: ['alpha.gr'] },
   { name: 'Εθνική Τράπεζα', keywords: ['nbg','εθνικη τραπεζα','national bank'], domains: ['nbg.gr'] },
   { name: 'Τράπεζα Πειραιώς', keywords: ['πειραιως','piraeus','winbank'], domains: ['piraeusbank.gr','winbank.gr'] },
-  { name: 'Cosmote / e-pay', keywords: ['cosmote','e-pay','epay'], domains: ['cosmote.gr'] },
+  { name: 'Cosmote / e-pay', keywords: ['cosmote','e-pay','epay'], domains: ['cosmote.gr','cosmoteinsurance.gr'] },
   { name: 'ΕΦΚΑ', keywords: ['εφκα','efka','e-εφκα','e-efka'], domains: ['efka.gov.gr','e-efka.gov.gr'] },
   { name: 'Ελληνική Αστυνομία', keywords: ['αστυνομια','police','ελληνικη αστυνομια'], domains: [] },
   { name: 'ΕΟΠΥΥ', keywords: ['εοπυυ','eopyy','ασφαλιστικη ικανοτητα','υγειονομικη'], domains: ['eopyy.gov.gr'] },
@@ -219,7 +223,8 @@ function analyzeText(text) {
   if (containsAny(clean, GREEKLISH_CREDS) && msgHasLink) { add(signals,'Greeklish + σύνδεσμος',25); totalScore += 25 }
 
   // Hard rules
-  if (msgHasLink && containsAny(clean, CREDS)) totalScore = Math.max(totalScore, 70)
+  const linkIsRisky = unknownDomains.length > 0 || hasDefangedLink(text)
+  if (linkIsRisky && containsAny(clean, CREDS)) totalScore = Math.max(totalScore, 70)
   if (signals.some(s => s.includes('Παρουσίαση')) && unknownDomains.length > 0 && containsAny(clean, [...PAYMENT,...URGENCY,...REWARD])) totalScore = Math.max(totalScore, 70)
   // (no generic defanged hard rule — it over-alarmed on job/wrong-number openers)
   if (containsAny(clean, PUBLIC_SERVICE) && msgHasLink && containsAny(clean, PAYMENT)) totalScore = Math.max(totalScore, 70)
