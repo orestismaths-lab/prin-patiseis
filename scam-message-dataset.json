@@ -8,7 +8,7 @@
   ],
   "safetyNote": "All URLs are defanged with hxxps:// and [.]invalid. They are synthetic examples based on real scam patterns. Do not convert them into active links.",
   "usage": "Use these examples as test cases and rule-discovery input for a defensive scam-detection engine.",
-  "totalCases": 71,
+  "totalCases": 76,
   "cases": [
     {
       "id": "SCAM-GR-GOV-001",
@@ -1274,6 +1274,60 @@
       "expectedRisk": "dangerous",
       "signals": ["defanged_url", "unknown_domain", "brand_impersonation", "reward", "urgency", "payment", "credential_implied", "cooccurrence_boost"],
       "engineHints": ["5 attack vectors fire simultaneously — cooccurrence boost applies"]
+    },
+    {
+      "id": "SCAM-GR-GOVPASS-001",
+      "category": "brand_impersonation_gov",
+      "channel": "sms",
+      "message": "Επίσημη Ειδοποίηση gov .gr – Fuel Pass III\n\nΔικαιούστε οικονομική ενίσχυση καυσίμων μέσω του προγράμματος Fuel Pass III.\n\nΓια να πιστωθεί το ποσό στον λογαριασμό σας, είναι απαραίτητη η άμεση ενεργοποίηση της κάρτας σας στην επίσημη πλατφόρμα gov .gr:\n\nhttps://vouchers-gov.229712.cc/gr\n\n Σημαντικό: Η μη ενεργοποίηση εντός της προθεσμίας θα οδηγήσει σε ακύρωση της επιδότησης.\n\nΑν ο παραπάνω σύνδεσμος δεν λειτουργεί, απαντήστε με \"Y\" για να λάβετε νέο σύνδεσμο ενεργοποίησης.\n\nΕλληνική Δημοκρατία – Υπουργείο Οικονομικών",
+      "links": ["https://vouchers-gov.229712.cc/gr"],
+      "expectedRisk": "dangerous",
+      "signals": ["unknown_domain", "suspicious_tld_cc", "brand_impersonation_fuelpass", "reward", "urgency", "payment", "cooccurrence_boost"],
+      "engineHints": ["gov .gr with space = visual deception; vouchers-gov.229712.cc = unknown .cc domain impersonating gov; δικαιούστε + fuel pass + εντός προθεσμίας trigger all major vectors"]
+    },
+    {
+      "id": "SCAM-GR-ELTA-001",
+      "category": "brand_impersonation_courier",
+      "channel": "sms",
+      "message": "Το δέμα των Ελληνικών Ταχυδρομείων έφτασε στην αποθήκη και δεν μπορεί να παραδοθεί λόγω ελλιπών στοιχείων διεύθυνσης. Επιβεβαιώστε τη διεύθυνσή σας στον σύνδεσμο. https://aelta.top/gr",
+      "links": ["https://aelta.top/gr"],
+      "expectedRisk": "dangerous",
+      "signals": ["unknown_domain", "suspicious_tld_top", "brand_impersonation_elta", "typosquatting", "credential_implied", "cooccurrence_boost"],
+      "engineHints": ["aelta.top = typosquatting ΕΛΤΑ; real URL from protothema.gr article; επιβεβαιώστε triggers credential word"],
+      "source": "https://www.protothema.gr/greece/article/1461202/apati-me-doloma-dema-apo-ta-elta-deite-to-sms-pou-stelnoun-oi-epitideioi/"
+    },
+    {
+      "id": "SCAM-GR-ELTA-002",
+      "category": "brand_impersonation_courier",
+      "channel": "sms",
+      "message": "ΕΛΤΑ: Ειδοποίηση Παράδοσης Πακέτου\n\nΠροσπαθήσαμε να παραδώσουμε το πακέτο σας στις 3 Φεβρουαρίου 2026, αλλά η παράδοση απέτυχε, καθώς απαιτούνταν υπογραφή.\n\nΓια να εξασφαλίσετε επιτυχή παράδοση, παρακαλούμε επιλέξτε μία από τις παρακάτω επιλογές έως τις 5 Φεβρουαρίου 2026.\n\nΔιαχειριστείτε την παράδοσή σας: https://elta-delivery-gr.site/track\n\nΕάν δεν γίνει καμία ενέργεια μέχρι τις 5 Φεβρουαρίου, το πακέτο ενδέχεται να επιστραφεί στον αποστολέα",
+      "links": ["https://elta-delivery-gr.site/track"],
+      "expectedRisk": "dangerous",
+      "signals": ["unknown_domain", "suspicious_tld_site", "brand_impersonation_elta", "typosquatting", "urgency"],
+      "engineHints": ["elta-delivery-gr.site = typosquatting ΕΛΤΑ; URL in article replaced with placeholder — representative fake domain used; deadline urgency"],
+      "source": "https://www.iefimerida.gr/ellada/ayta-ta-sms-einai-dithen-apo-ta-elta-kai-einai-apati"
+    },
+    {
+      "id": "SCAM-GR-TRAFFIC-001",
+      "category": "gov_impersonation_payment",
+      "channel": "sms",
+      "message": "Η σημερινή ημέρα είναι η τελική προθεσμία. Ελέγξτε τις παραβάσεις σας και ολοκληρώστε την πληρωμή μέσα στις επόμενες 3 ώρες μέσω του επίσημου δικτυακού τόπου https://gov-fines.click/pay",
+      "links": ["https://gov-fines.click/pay"],
+      "expectedRisk": "suspicious",
+      "signals": ["unknown_domain", "suspicious_tld_click", "urgency", "payment"],
+      "engineHints": ["no explicit brand keyword in text — falls short of dangerous; representative fake domain used; real SMS verbatim from iefimerida.gr"],
+      "source": "https://www.iefimerida.gr/oikonomia/i-nea-apati-me-ta-sms-gia-ta-teli-kykloforias"
+    },
+    {
+      "id": "SCAM-GR-BANK-001",
+      "category": "bank_impersonation_generic",
+      "channel": "sms",
+      "message": "Όλες οι κάρτες απενεργοποιούνται προσωρινά για διαδικτυακές πληρωμές μέχρι να εγγραφείτε στα αναβαθμισμένα μέτρα ασφαλείας. Για να το ενεργοποιήσετε, ακολουθήστε τα ακόλουθα απλά βήματα https://bank-secure-gr.online/card",
+      "links": ["https://bank-secure-gr.online/card"],
+      "expectedRisk": "suspicious",
+      "signals": ["unknown_domain", "suspicious_tld_online", "fear_implied"],
+      "engineHints": ["no explicit bank brand name — generic card deactivation; representative fake domain used; real SMS verbatim from protothema.gr"],
+      "source": "https://www.protothema.gr/technology/article/1162499/ilektronikes-apates-min-apadate-se-fake-minumata-gia-na-min-deite-ta-hrimata-sas-na-kanoun-ftera/"
     }
   ]
 }
