@@ -163,8 +163,15 @@ function analyzeText(text) {
   // 5. Fear
   const fc = countMatches(clean, FEAR); if (fc > 0) { const s = Math.min(fc*10,25); add(signals,'Φόβος/αποκλεισμός',s); totalScore += s }
 
-  // 6. Credentials
-  const cc = countMatches(clean, CREDS); if (cc > 0) { const s = Math.min(cc*12,30); add(signals,'Κωδικοί/στοιχεία',s); totalScore += s }
+  // 6. Credentials (dampened when no link; halved when security negation present)
+  const NEGATION = ['μην αποκαλυπτ','μη αποκαλυπτ','μην κοινοποι','μη κοινοποι','δεν ζητ','δεν σας ζητ','ποτε δεν ζητ','μη δινετε','μην δινετε','αν δεν ζητησατε','αν δεν εκτελεσατε','αν δεν το κανατε','δεν εκτελεσατε εσεις','αν δεν ειστε εσεις']
+  const cc = countMatches(clean, CREDS)
+  if (cc > 0) {
+    const perMatch = msgHasLink ? 12 : 6; const cap = msgHasLink ? 30 : 15
+    let cs = Math.min(cc * perMatch, cap)
+    if (containsAny(clean, NEGATION)) cs = Math.floor(cs / 2)
+    if (cs > 0) { add(signals,'Κωδικοί/στοιχεία',cs); totalScore += cs }
+  }
 
   // 7. Payment
   const pc = countMatches(clean, PAYMENT); if (pc > 0) { const s = Math.min(pc*7,20); add(signals,'Πληρωμή',s); totalScore += s }
@@ -194,6 +201,10 @@ function analyzeText(text) {
   const suspTld = domains.filter(d => SUSP_TLDS.some(t => d.endsWith(t)))
   if (suspTld.length > 0) { const s = Math.min(suspTld.length*10,30); add(signals,'Ύποπτο TLD',s); totalScore += s }
 
+  // 12a. Homoglyph / IDN homograph
+  const homoglyphD = unknownDomains.filter(d => /[^\x00-\x7F]/.test(d) || d.split('.').some(l => l.startsWith('xn--')))
+  if (homoglyphD.length > 0) { add(signals,'Homoglyph domain',35,homoglyphD.join(',')); totalScore += 35 }
+
   // 13. Premium phones
   const premium = phones.filter(isPremiumRatePhone)
   if (premium.length > 0) { add(signals,'Premium rate phone',30); totalScore += 30 }
@@ -222,6 +233,16 @@ function analyzeText(text) {
 
   // 20. Greeklish
   if (containsAny(clean, GREEKLISH_CREDS) && msgHasLink) { add(signals,'Greeklish + σύνδεσμος',25); totalScore += 25 }
+
+  // 21. Action verbs + unknown domain
+  const ACTION_VERBS = ['πατηστε','πατησε','πατα εδω','πατα το link','πατηστε εδω','κανετε κλικ','κανε κλικ','click here','κλικ εδω','μπειτε','μπες στο','εισελθετε','ακολουθηστε τον συνδεσμο','ακολουθησε τον συνδεσμο','ανοιξτε τον συνδεσμο','ανοιξτε το link','επισκεφθειτε','επισκεφτειτε','μεταβειτε','μεταβητε στο','σκαναρε','σαρωστε','scan the qr']
+  if (containsAny(clean, ACTION_VERBS) && unknownDomains.length > 0) { add(signals,'Εντολή κλικ σε ύποπτο link',15); totalScore += 15 }
+
+  // Cooccurrence boost
+  const hasBrandImpNow = signals.some(s => s.includes('Παρουσίαση'))
+  const uc2 = countMatches(clean, URGENCY), pc2 = countMatches(clean, PAYMENT)
+  const vectors = [unknownDomains.length > 0, fc > 0, cc > 0 && msgHasLink, hasBrandImpNow, uc2 > 0 && pc2 > 0].filter(Boolean).length
+  if (vectors >= 3) { add(signals,'Πολλαπλά σήματα',10); totalScore += 10 }
 
   // Hard rules
   const linkIsRisky = unknownDomains.length > 0 || hasDefangedLink(text)

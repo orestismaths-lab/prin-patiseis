@@ -106,11 +106,28 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
   }
 
   // 6. Credential / sensitive data requests
+  // Dampened when there is no link (informational, not a phishing ask).
+  // Further halved when the surrounding context negates the credential mention
+  // ("μην κοινοποιείτε τον κωδικό σας" is a security warning, not a request).
   const credCount = countMatches(clean, greek.credentialWords)
   if (credCount > 0) {
-    const score = Math.min(credCount * 12, 30)
-    signals.push({ label: 'Ζητά κωδικούς, PIN, OTP ή στοιχεία κάρτας', score })
-    totalScore += score
+    const negationPatterns = [
+      'μην αποκαλυπτ', 'μη αποκαλυπτ',
+      'μην κοινοποι', 'μη κοινοποι',
+      'δεν ζητ', 'δεν σας ζητ', 'ποτε δεν ζητ',
+      'μη δινετε', 'μην δινετε',
+      'αν δεν ζητησατε', 'αν δεν εκτελεσατε', 'αν δεν το κανατε',
+      'δεν εκτελεσατε εσεις', 'αν δεν ειστε εσεις',
+    ]
+    const hasSecurityNegation = containsAny(clean, negationPatterns)
+    const perMatch = messageHasLink ? 12 : 6
+    const cap = messageHasLink ? 30 : 15
+    let credScore = Math.min(credCount * perMatch, cap)
+    if (hasSecurityNegation) credScore = Math.floor(credScore / 2)
+    if (credScore > 0) {
+      signals.push({ label: 'Ζητά κωδικούς, PIN, OTP ή στοιχεία κάρτας', score: credScore })
+      totalScore += credScore
+    }
   }
 
   // 7. Payment words
@@ -167,6 +184,22 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     const tlds = [...new Set(suspiciousTldDomains.map((d) => '.' + d.split('.').pop()))].join(', ')
     signals.push({ label: 'Ύποπτη κατάληξη domain (π.χ. .ru, .xyz, .tk)', score, detail: tlds })
     totalScore += score
+  }
+
+  // 12a. Unicode homoglyph / IDN homograph attack
+  // Scammers substitute visually identical Cyrillic/Greek chars into domain names
+  // (e.g. 'cοsmote.gr' with a Cyrillic 'ο'). new URL() Punycodes them to xn-- labels;
+  // we catch both the raw non-ASCII case and the post-Punycode xn-- label case.
+  const homoglyphDomains = unknownDomains.filter(
+    (d) => /[^\x00-\x7F]/.test(d) || d.split('.').some((label) => label.startsWith('xn--'))
+  )
+  if (homoglyphDomains.length > 0) {
+    signals.push({
+      label: 'Domain με ύποπτους Unicode χαρακτήρες (homograph attack)',
+      score: 35,
+      detail: homoglyphDomains.join(', '),
+    })
+    totalScore += 35
   }
 
   // 13. Premium-rate phone numbers (901x, 909x)
@@ -258,6 +291,41 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     totalScore += 25
   }
 
+  // 22. Action-verb imperative + unknown link
+  // Scam messages command the user to act immediately ("πάτησε εδώ", "μπες", "κάνε κλικ").
+  // Only counts when there is also an unknown domain — legitimate messages with known domains
+  // often contain action phrases ("ακολούθησε το link στο cosmote.gr").
+  const actionVerbWords = [
+    'πατηστε', 'πατησε', 'πατα εδω', 'πατα το link', 'πατηστε εδω',
+    'κανετε κλικ', 'κανε κλικ', 'click here', 'κλικ εδω',
+    'μπειτε', 'μπες στο', 'εισελθετε',
+    'ακολουθηστε τον συνδεσμο', 'ακολουθησε τον συνδεσμο',
+    'ανοιξτε τον συνδεσμο', 'ανοιξτε το link',
+    'επισκεφθειτε', 'επισκεφτειτε',
+    'μεταβειτε', 'μεταβητε στο',
+    'σκαναρε', 'σαρωστε', 'scan the qr',
+  ]
+  if (containsAny(clean, actionVerbWords) && unknownDomains.length > 0) {
+    signals.push({ label: 'Εντολή να κάνεις κλικ σε ύποπτο σύνδεσμο', score: 15 })
+    totalScore += 15
+  }
+
+  // ── Cooccurrence boost: 3+ distinct attack vectors firing simultaneously ───
+  // Individual weak signals can each stay below threshold; when 3+ categories
+  // fire together the combination is a reliable scam indicator.
+  const hasBrandImpersonationNow = signals.some((s) => s.label.includes('παρουσίαση ως'))
+  const attackVectors = [
+    unknownDomains.length > 0,
+    fearCount > 0,
+    credCount > 0 && messageHasLink,
+    hasBrandImpersonationNow,
+    urgencyCount > 0 && payCount > 0,
+  ]
+  if (attackVectors.filter(Boolean).length >= 3) {
+    signals.push({ label: 'Πολλαπλά ύποπτα σήματα ταυτόχρονα', score: 10 })
+    totalScore += 10
+  }
+
   // ── Hard rule: unknown/defanged link + credential request = always dangerous ──
   // Requires an unknown domain or defanged link — a legit gov.gr link mentioning
   // ΑΜΚΑ in context should NOT trigger this.
@@ -271,7 +339,7 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
   }
 
   // ── Hard rule: brand impersonation + unknown domain + payment/urgency/reward ──
-  const hasBrandImpersonation = signals.some((s) => s.label.includes('παρουσίαση ως'))
+  const hasBrandImpersonation = hasBrandImpersonationNow
   const hasPaymentOrUrgency = containsAny(clean, [...greek.paymentWords, ...greek.urgencyWords, ...greek.rewardWords])
   if (hasBrandImpersonation && unknownDomains.length > 0 && hasPaymentOrUrgency) {
     totalScore = Math.max(totalScore, 70)

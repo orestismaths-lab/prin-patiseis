@@ -3,7 +3,7 @@
     "version": 1,
     "createdAt": "2026-05-15T00:00:00Z",
     "note": "Normal/legitimate Greek messages used to verify the scam engine does not over-alarm. All cases must score < 30 (riskLevel=low).",
-    "totalCases": 50,
+    "totalCases": 52,
     "language": ["el"]
   },
   "cases": [
@@ -333,8 +333,8 @@
       "id": "LEGIT-REAL-013",
       "category": "real_world_sms",
       "message": "Από την παραγγελία σου κέρδισες κουπόνι +1.000 πόντων με τον κωδικό PS2CKXB3NSNU. Για να λάβεις τους +1.000 πόντους, εξαργύρωσε το κουπόνι σου παραγγέλνοντας από το ίδιο κατάστημα μέχρι 13/07/2025. BOX. To delivery που πάντα κερδίζεις.",
-      "expectedRisk": "suspicious",
-      "notes": "BOX loyalty coupon (no link). Known false positive: 'κωδικό' (coupon code) matches credentialWords 'κωδικ' (+12) and 'κέρδισες'+'κερδίζεις' both match rewardWords (+20). Total 32pts — 2pts over threshold. No link, so hard rule cannot fire. Documented as known engine limitation: 'κωδικ' stem is ambiguous between credential codes and coupon codes."
+      "expectedRisk": "low",
+      "notes": "BOX loyalty coupon (no link). 'κωδικό' (coupon code) matches credentialWords 'κωδικ' but no-link dampening halves score: 6pts instead of 12. Reward 'κέρδισες'+'κερδίζεις' = 20pts. Total 26pts — low. Fixed by no-link credential dampening (#6)."
     },
     {
       "id": "LEGIT-REAL-014",
@@ -349,6 +349,20 @@
       "message": "Το κουπόνι σου WAJ1KHL58KWL λήγει αύριο (16-01-2026 23:59). Παράγγειλε τώρα για να μη το χάσεις! https://box.go.link/JVVd",
       "expectedRisk": "low",
       "notes": "BOX coupon expiry reminder. box.go.link is known. 'λήγει' + 'τώρα' = 16pts urgency. Score: 16pts."
+    },
+    {
+      "id": "LEGIT-GR-NEGATION-001",
+      "category": "security_warning",
+      "message": "Σας υπενθυμίζουμε: Ποτέ δεν ζητάμε τον κωδικό σας μέσω SMS ή τηλεφώνου. Αν λάβετε τέτοιο αίτημα, μην απαντάτε και καλέστε μας στο 210-0000000.",
+      "expectedRisk": "low",
+      "notes": "Bank security reminder — negation context. 'κωδικ' matches credentialWords but 'ποτε δεν ζητ' negation halves the already-dampened no-link score: 6/2=3pts. Total 3pts."
+    },
+    {
+      "id": "LEGIT-GR-NEGATION-002",
+      "category": "security_warning",
+      "message": "Ειδοποίηση ασφαλείας: Μην κοινοποιείτε τον κωδικό OTP σε κανέναν. Αν δεν εκτελέσατε εσείς αυτή τη συναλλαγή, καλέστε αμέσως τo 210-1234567.",
+      "expectedRisk": "low",
+      "notes": "'κωδικ'+'otp' = 2 cred matches. No link → dampened: 2*6=12, cap 15 → 12pts. 'μην κοινοποι' negation → 12/2=6pts. 'αμεσα' urgency +8. Total 14pts."
     },
     {
       "id": "LEGIT-REAL-016",

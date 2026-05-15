@@ -8,7 +8,7 @@
   ],
   "safetyNote": "All URLs are defanged with hxxps:// and [.]invalid. They are synthetic examples based on real scam patterns. Do not convert them into active links.",
   "usage": "Use these examples as test cases and rule-discovery input for a defensive scam-detection engine.",
-  "totalCases": 68,
+  "totalCases": 71,
   "cases": [
     {
       "id": "SCAM-GR-GOV-001",
@@ -1244,6 +1244,36 @@
       "engineHints": [
         "OCR confusions in gov/fine"
       ]
+    },
+    {
+      "id": "SCAM-GR-HOMOGLYPH-001",
+      "category": "homoglyph_domain",
+      "channel": "sms",
+      "message": "ΑΛΦΑ BANK: Ανιχνεύθηκε ύποπτη είσοδος στον λογαριασμό σας. Επαληθεύστε άμεσα: https://www.аlрhа-bаnk.gr/verify",
+      "links": ["https://www.аlрhа-bаnk.gr/verify"],
+      "expectedRisk": "dangerous",
+      "signals": ["homoglyph_domain", "brand_impersonation", "urgency", "credential_request"],
+      "engineHints": ["а=Cyrillic а (U+0430), р=Cyrillic р (U+0440) — visually identical to Latin a/p"]
+    },
+    {
+      "id": "SCAM-GR-ACTION-001",
+      "category": "action_verb_phishing",
+      "channel": "sms",
+      "message": "Η κάρτα σας έχει αποκλειστεί προσωρινά. Επισκεφθείτε αμέσως το https://alpha-secure-verify.site/card για επαναφορά.",
+      "links": ["https://alpha-secure-verify.site/card"],
+      "expectedRisk": "dangerous",
+      "signals": ["action_verb", "unknown_domain", "fear", "urgency", "credential_implied"],
+      "engineHints": ["επισκεφθείτε = action verb, unknown .site domain, fear word αποκλειστεί"]
+    },
+    {
+      "id": "SCAM-GR-MULTISHOT-001",
+      "category": "multi_signal",
+      "channel": "sms",
+      "message": "Η ΕΦΚΑ σας ενημερώνει: Εκκρεμεί επιστροφή 187€. Βεβαιωθείτε ότι τα στοιχεία σας είναι ενημερωμένα σήμερα: hxxps://efka-refund-check[.]online",
+      "links": ["hxxps://efka-refund-check[.]online"],
+      "expectedRisk": "dangerous",
+      "signals": ["defanged_url", "unknown_domain", "brand_impersonation", "reward", "urgency", "payment", "credential_implied", "cooccurrence_boost"],
+      "engineHints": ["5 attack vectors fire simultaneously — cooccurrence boost applies"]
     }
   ]
 }
