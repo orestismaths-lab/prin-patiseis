@@ -202,6 +202,18 @@ export function analyzeText(text: string, config: ScamConfig = DEFAULT_CONFIG): 
     totalScore += 35
   }
 
+  // 12b. Gov/bank keyword in unknown domain (impersonation without brand name in text)
+  const govDomains = unknownDomains.filter((d) => d.split(/[-_.]/).includes('gov') || d.startsWith('gov'))
+  if (govDomains.length > 0) {
+    signals.push({ label: 'Domain μιμείται κυβερνητική υπηρεσία', score: 30, detail: govDomains.join(', ') })
+    totalScore += 30
+  }
+  const bankDomains = unknownDomains.filter((d) => d.includes('bank'))
+  if (bankDomains.length > 0) {
+    signals.push({ label: 'Domain μιμείται τράπεζα', score: 25, detail: bankDomains.join(', ') })
+    totalScore += 25
+  }
+
   // 13. Premium-rate phone numbers (901x, 909x)
   const premiumPhones = phones.filter(isPremiumRatePhone)
   if (premiumPhones.length > 0) {
