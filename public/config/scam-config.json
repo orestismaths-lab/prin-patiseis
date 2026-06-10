@@ -49,7 +49,16 @@
     "cosmote.go.link",
     "box.go.link",
     "boxfood.page.link",
-    "g.page"
+    "g.page",
+    "whatsapp.com",
+    "blob.core.windows.net",
+    "windows.net",
+    "aegeanair.com",
+    "cambridgeenglish.org",
+    "examination-services.gr",
+    "whatsup.gr",
+    "wup.go.link",
+    "wup.page.link"
   ],
   "phishingDomains": [
     "0-9-8-7-6-5-4-3-2-1-0.live",
@@ -1435,7 +1444,9 @@
         "domains": [
           "microsoft.com",
           "apple.com",
-          "icloud.com"
+          "icloud.com",
+          "blob.core.windows.net",
+          "windows.net"
         ]
       },
       {

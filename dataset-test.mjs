@@ -82,6 +82,9 @@ const KNOWN = [
   'cosmoteinsurance.gr','cosmote.go.link',
   'box.go.link', 'boxfood.page.link',
   'g.page',
+  'whatsapp.com','blob.core.windows.net','windows.net',
+  'aegeanair.com','cambridgeenglish.org','examination-services.gr',
+  'whatsup.gr','wup.go.link','wup.page.link',
 ]
 function isKnown(d) { const l = d.toLowerCase(); return KNOWN.some(k => l === k || l.endsWith('.' + k)) }
 
@@ -109,7 +112,7 @@ const BRANDS = [
   { name: 'Fuel Pass / Power Pass', keywords: ['fuel pass','power pass','καυσιμ επιδομ'], domains: ['fuelpass.gov.gr','powerpass.gov.gr','epass.gov.gr'] },
   { name: 'Netflix', keywords: ['netflix'], domains: ['netflix.com'] },
   { name: 'Amazon', keywords: ['amazon','prime'], domains: ['amazon.com','amazon.co.uk'] },
-  { name: 'Microsoft / Apple', keywords: ['microsoft','windows','apple support','icloud'], domains: ['microsoft.com','apple.com','icloud.com'] },
+  { name: 'Microsoft / Apple', keywords: ['microsoft','windows','apple support','icloud'], domains: ['microsoft.com','apple.com','icloud.com','blob.core.windows.net','windows.net'] },
   { name: 'Τροχαία / ΥΜΕ', keywords: ['τροχαια','yme','υπ. μεταφορων','αδεια οδηγησης','κτεο','κλιση τροχαιας'], domains: ['yme.gov.gr'] },
   { name: 'Courier / Delivery', keywords: ['fedex','dhl','ups','boxnow','speedex','acs courier','γενικη ταχυδρομικη','courier'], domains: ['fedex.com','dhl.com','ups.com'] },
   { name: 'Δήμος / Parking', keywords: ['δημος','σταθμευση','τελος σταθμευσης','parkingpay'], domains: [] },

@@ -8,7 +8,7 @@
   ],
   "safetyNote": "All URLs are defanged with hxxps:// and [.]invalid. They are synthetic examples based on real scam patterns. Do not convert them into active links.",
   "usage": "Use these examples as test cases and rule-discovery input for a defensive scam-detection engine.",
-  "totalCases": 76,
+  "totalCases": 78,
   "cases": [
     {
       "id": "SCAM-GR-GOV-001",
@@ -1328,6 +1328,28 @@
       "signals": ["unknown_domain", "suspicious_tld_online", "fear", "bank_domain"],
       "engineHints": ["bank-secure-gr.online contains 'bank' in unknown domain → bank impersonation signal; απενεργοποιούνται matches stem 'απενεργοποι'; representative fake domain used; real SMS verbatim from protothema.gr"],
       "source": "https://www.protothema.gr/technology/article/1162499/ilektronikes-apates-min-apadate-se-fake-minumata-gia-na-min-deite-ta-hrimata-sas-na-kanoun-ftera/"
+    },
+    {
+      "id": "SCAM-GR-AADE-001",
+      "category": "gov_impersonation",
+      "channel": "sms",
+      "message": "Σύμφωνα με τα στοιχεία της ηλεκτρονικής πλατφόρμας, εντοπίζεται εκκρεμής οφειλή που σχετίζεται με διοικητική παράβαση του σχήματος σας, η οποία παραμένει ανεξόφλητη για διάστημα άνω των 10 ημερών. Παρακαλείστε να προβείτε στις απαιτούμενες ενέργειες τακτοποίησης, σύμφωνα με τις ισχύουσες διαδικασίες, προκειμένου να αποφευχθεί η επιβολή πρόσθετων επιβαρύνσεων. Πληροφορίες και πρόσβαση στην υπηρεσία: https://aadeaccess.cc/gr",
+      "links": ["https://aadeaccess.cc/gr"],
+      "expectedRisk": "dangerous",
+      "signals": ["unknown_domain", "suspicious_tld_cc", "payment", "action_verb"],
+      "engineHints": ["aadeaccess.cc has suspicious TLD .cc (+15) and is unknown (+20); payment words: οφειλη+ανεξοφλητ+παραβαση (+20 capped); action verb 'προβειτε' fires since unknownDomains>0 (+10); real SMS captured from screenshot from Moroccan number +212 6 19 27 51 66"],
+      "source": "real_screenshot_IMG_2705"
+    },
+    {
+      "id": "SCAM-GR-ELTA-003",
+      "category": "courier_impersonation",
+      "channel": "sms",
+      "message": "Προσπαθήσαμε να σας παραδώσουμε, παρακαλείστε επιλέξτε μία από τις παρακάτω επιλογές έως τις 31 Ιανουαρίου 2026: Επαναπρογραμματίστε την παράδοση. Κατευθυνθείτε στο κοντινό σημείο παραλαβής ΕΛΤΑ. Διαχειριστείτε την παράδοση σας: https://elta.609620.com/gr",
+      "links": ["https://elta.609620.com/gr"],
+      "expectedRisk": "dangerous",
+      "signals": ["brand_impersonation_elta", "unknown_domain", "action_verb"],
+      "engineHints": ["'ΕΛΤΑ' in text + elta.609620.com not in ΕΛΤΑ brand domains → brand impersonation +35; unknown domain +20; action verb fires since unknownDomains>0; real SMS captured from screenshot from Philippine number +63 908 712 8896"],
+      "source": "real_screenshot_IMG_2706"
     }
   ]
 }

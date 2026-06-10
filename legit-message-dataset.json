@@ -3,7 +3,7 @@
     "version": 1,
     "createdAt": "2026-05-15T00:00:00Z",
     "note": "Normal/legitimate Greek messages used to verify the scam engine does not over-alarm. All cases must score < 30 (riskLevel=low).",
-    "totalCases": 52,
+    "totalCases": 65,
     "language": ["el"]
   },
   "cases": [
@@ -370,6 +370,97 @@
       "message": "Το 2€ κουπόνι 4EHG1Y2H71 που κέρδισες για το Portofino λήγει αύριο (31-01-2026 23:59). Παράγγειλε τώρα για να μη το χάσεις! Και μην ξεχνάς! Μόνο με το BOX και την COSMOTE TELEKOM κερδίζεις ατελείωτα 2€ για κάθε παραγγελία, σε χιλιάδες καταστήματα!(https://box.go.link/JVVd)",
       "expectedRisk": "suspicious",
       "notes": "BOX+Cosmote partnership promo (known false positive). Aggressive marketing language: 'λήγει'+'τώρα' urgency(16), '€' payment(7), 'κέρδισες'+'κερδίζεις' reward(20) = 43pts. Brand impersonation (COSMOTE mentioned, box.go.link is known but not cosmote.gr) now scores 0 after fix — but urgency+reward+payment alone = 43pts suspicious. Documents that aggressive promotional messages resembling scam patterns will trigger caution."
+    },
+    {
+      "id": "LEGIT-REAL-017",
+      "category": "real_world_sms",
+      "message": "Your WhatsApp code: 347-373. You can also tap on this link to verify your phone: v.whatsapp.com/347373 Don't share this code with others",
+      "expectedRisk": "low",
+      "notes": "WhatsApp OTP. v.whatsapp.com is subdomain of whatsapp.com (known). 'verify' credential word +12pts with link. Total: 12pts."
+    },
+    {
+      "id": "LEGIT-REAL-018",
+      "category": "real_world_sms",
+      "message": "Ο κωδικός επαληθεύσεως του Apple ID σας είναι: 702090",
+      "expectedRisk": "low",
+      "notes": "Apple OTP in Greek. No link — 'κωδικ' dampened: 6pts. Total: 6pts."
+    },
+    {
+      "id": "LEGIT-REAL-019",
+      "category": "real_world_sms",
+      "message": "e-tickets: https://vouchersstorageprod.blob.core.windows.net/vouchers/59367528/output/30EC1E82F-FC47C6E8F57EE32D6AD2A8015647c0724e034.html",
+      "expectedRisk": "low",
+      "notes": "HSW Azure Blob e-tickets. extractDomains returns BOTH vouchersstorageprod.blob.core.windows.net (via URL parser) AND windows.net (via bareDomainRegex within URL text). Both now in legitimateDomains → no unknown domain signals. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-020",
+      "category": "real_world_sms",
+      "message": "Your FCE fS result is now available at: https://candidates.cambridgeenglish.org/Members/Login.aspx?M=None Use your ID & Secret number found on your timetable.",
+      "expectedRisk": "low",
+      "notes": "British Council FCE exam result. candidates.cambridgeenglish.org is subdomain of cambridgeenglish.org (known). 'ID' not in credentialWords. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-021",
+      "category": "real_world_sms",
+      "message": "Click the link to view your Mobile Boarding Pass. https://mobile.aegeanair.com/mbp.do?id=92szp8jfuxqz9ycyoya8xavff&l=el Please present it at the airport.",
+      "expectedRisk": "low",
+      "notes": "Aegean Airlines mobile boarding pass. mobile.aegeanair.com is subdomain of aegeanair.com (known). Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-022",
+      "category": "real_world_sms",
+      "message": "Ευχαριστούμε! Βρες την αποδείξή σου εδώ https://itx.to/GTLdckBXhwz",
+      "expectedRisk": "low",
+      "notes": "Stradivarius (Inditex) receipt via itx.to shortener. itx.to is unknown → +20 suspicious domain. No brand in text, no other signals. Total: 20pts."
+    },
+    {
+      "id": "LEGIT-REAL-023",
+      "category": "real_world_sms",
+      "message": "ΧΡΟΝΙΑ ΠΟΛΛΑ ΑΠΟ ΤΟ RELOAD IT ΜΕ ΔΩΡΟ ΕΝΑ BIRTHDAY TOKEN ΓΙΑ ΝΑ ΓΙΟΡΤΑΣΕΙΣ ΤΑ ΓΕΝΕΘΛΙΑ ΣΟΥ! ΒΡΕΣ ΤΟ ΑΠΟΚΛΕΙΣΤΙΚΑ ΣΤΟ WHAT'S UP APP https://wup.page.link/rldt",
+      "expectedRisk": "low",
+      "notes": "ReloadIt birthday reward token via WhatsUp app. wup.page.link is known. 'δωρο' reward +10. Total: 10pts."
+    },
+    {
+      "id": "LEGIT-REAL-024",
+      "category": "real_world_sms",
+      "message": "Ο ΙΑΤΡΟΣ ΣΤΕΛΙΟΣ ΔΕΡΜΙΤΖΑΚΗΣ ΚΑΙ ΟΙ ΣΥΝΕΡΓΑΤΕΣ ΤΟΥ, ΣΑΣ ΕΥΧΟΝΤΑΙ ΓΙΑ ΤΗΝ ΗΜΕΡΑ ΤΩΝ ΓΕΝΕΘΛΙΩΝ ΤΟΥ, ΚΑΛΑ ΚΑΙ ΔΗΜΙΟΥΡΓΙΚΑ.",
+      "expectedRisk": "low",
+      "notes": "Premedicare (pharmacy/medical) birthday greeting from doctor. No link, no keywords. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-025",
+      "category": "real_world_sms",
+      "message": "ΤΑ MB ΕΞΑΝΤΛΗΘΗΚΑΝ, ΓΙΑ ΝΑ ΣΥΝΕΧΙΣΕΙΣ ΝΑ ΣΕΡΦΑΡΕΙΣ ΣΤΟ INTERNET ΚΑΛΕΣΕ 1330 ΚΑΙ ΕΝΕΡΓΟΠΟΙΗΣΕ ΕΝΑ ΑΠΟ ΤΑ ΔΙΑΘΕΣΙΜΑ ΠΑΚΕΤΑ https://myinternet.cosmote.gr",
+      "expectedRisk": "low",
+      "notes": "Cosmote data exhaustion alert. myinternet.cosmote.gr is subdomain of cosmote.gr (known). No keyword signals. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-026",
+      "category": "real_world_sms",
+      "message": "ΣΑΣ ΕΝΗΜΕΡΩΝΟΥΜΕ ΟΤΙ ΤΡΟΠΟΠΟΙΗΘΗΚΕ Η ΓΕΝΙΚΗ ΕΝΗΜΕΡΩΣΗ ΣΧΕΤΙΚΑ ΜΕ ΤΗΝ ΕΠΕΞΕΡΓΑΣΙΑ ΤΩΝ ΠΡΟΣΩΠΙΚΩΝ ΣΑΣ ΔΕΔΟΜΕΝΩΝ ΑΠΟ ΤΟΝ ΟΤΕ. ΓΙΑ ΠΕΡΙΣΣΟΤΕΡΕΣ ΛΕΠΤΟΜΕΡΕΙΕΣ ΜΠΕΙΤΕ ΣΤΟ www.cosmote.gr/dataprivacypolicy",
+      "expectedRisk": "low",
+      "notes": "Cosmote/OTE GDPR privacy policy update. www.cosmote.gr is known. No keyword signals. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-027",
+      "category": "real_world_sms",
+      "message": "ΣΑΣ ΥΠΕΝΘΥΜΙΖΟΥΜΕ ΤΟ ΡΑΝΤΕΒΟΥ ΜΑΣ ΣΑΒΒΑΤΟ 27/9 ΚΑΙ ΩΡΑ 09:30. ΓΙΑ ΟΠΟΙΑ ΑΛΛΑΓΗ, ΠΑΡΑΚΑΛΩ ΚΑΛΕΣΤΕ 2106813015 @CutMyHair ΑΝ.ΠΑΠΑΝΔΡΕΟΥ 85-87",
+      "expectedRisk": "low",
+      "notes": "Hairdresser appointment reminder. No link, no urgency/fear/payment/credential keywords. Phone number 2106813015 is landline. Score: 0pts."
+    },
+    {
+      "id": "LEGIT-REAL-028",
+      "category": "real_world_sms",
+      "message": "Η παραγγελία σου (κωδ. 9CCEA46E4C0F) στο κατάστημα CREPE DIEM θα είναι στην πόρτα σου Σήμερα, 20:50 - 21:00. Έχεις διαλέξει πληρωμή με κάρτα και το συνολικό ποσό είναι 12,94 €. Με την παραγγελία σου κέρδισες 250 πόντους.",
+      "expectedRisk": "suspicious",
+      "notes": "BOX food delivery order confirmation (known false positive). No link. 'σημερα' urgency +8, 'πληρωμη'+'€' payment = 14pts, 'κέρδισες' reward +10. Total: 32pts. Combines payment + reward + urgency in a legitimate context — engine correctly signals caution."
+    },
+    {
+      "id": "LEGIT-REAL-029",
+      "category": "real_world_sms",
+      "message": "ΚΕΡΔΙΣΕΣ 1+1 ΔΩΡΟ ΣΤΟ RED RAVEN ΜΕ ΚΩΔ. 9282960724 ΓΙΑ ΕΠΟΜΕΝΗ ΑΓΟΡΑ ΣΤΟ ΦΥΣΙΚΟ ΚΑΤΑΣΤΗΜΑ ΕΝΤΟΣ 60 ΗΜΕΡΩΝ. ΤΗΛ. 2106833276, ΚΑΤΣΟΥΛΗΡΗ 4, ΧΑΛΑΝΔΡΙ",
+      "expectedRisk": "low",
+      "notes": "Local pharmacy/wellness store loyalty reward. No link. 'κερδισεσ'+'δωρο' reward = 20pts. 'εντοσ' urgency +8. 'κωδ.' does NOT match 'κωδικ'. Total: 28pts."
     }
   ]
 }
