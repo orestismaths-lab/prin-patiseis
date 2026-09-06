@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "version": 117,
-    "updatedAt": "2026-09-05T07:57:29Z",
+    "version": 118,
+    "updatedAt": "2026-09-06T08:14:57Z",
     "note": "Auto-updated daily by GitHub Actions. Manual overrides in manualPhishingDomains / greek sections."
   },
   "legitimateDomains": [
